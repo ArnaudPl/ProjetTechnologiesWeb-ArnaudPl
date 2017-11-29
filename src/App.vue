@@ -33,8 +33,6 @@
 
           <v-layout column align-center>
 
-              <router-view></router-view>
-
           </v-layout>
           
         </v-slide-y-transition>
