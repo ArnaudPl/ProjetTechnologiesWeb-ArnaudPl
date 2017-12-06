@@ -3,7 +3,7 @@
 
         <v-navigation-drawer fixed :mini-variant="miniVariant" app style="display: flex; flex-direction: column; padding-bottom: 0;">
             <v-list>
-                <v-list-tile v-for="(menuItem, i) in menuItems" :key="i" :to="menuItem.to" ripple="true">
+                <v-list-tile v-for="(menuItem, i) in menuItems" :key="i" :to="menuItem.to" ripple>
                     <v-list-tile-action>
                         <v-icon v-html="menuItem.icon"></v-icon>
                     </v-list-tile-action>   
@@ -18,7 +18,7 @@
 
             <!-- Collé en bas de page -->
             <v-list>
-                <v-list-tile >
+                <v-list-tile>
                     <v-list-tile-action>
                         <v-icon>settings</v-icon>
                     </v-list-tile-action>
@@ -35,9 +35,9 @@
                 <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
             </v-btn>
 
-            <v-toolbar-title v-text="title"></v-toolbar-title>
+            <v-toolbar-title v-text="this.$root.projectTitle"></v-toolbar-title>
 
-            <v-toolbar-title class="pl-2 primary--text" slot="extension">{{ subtitle }}</v-toolbar-title>
+            <v-toolbar-title class="pl-2 primary--text" slot="extension">{{ this.$root.pageTitle }}</v-toolbar-title>
         </v-toolbar>
 
         <v-content>
@@ -83,11 +83,14 @@ export default {
                     icon: 'school',
                     title: 'Gestion des notes',
                     to: '/notes'
+                },
+                {
+                    icon: 'event',
+                    title: 'Gestion des modules',
+                    to: '/modules'
                 }
             ],
-            miniVariant: true,
-            title: 'Le projet incroyable',
-            subtitle: ''
+            miniVariant: true
         };
     }
 };

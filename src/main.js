@@ -25,5 +25,21 @@ new Vue({
     el: '#app',
     router,
     template: '<App/>',
-    components: { App }
+    components: { App },
+    data () {
+        return {
+            projectTitle: 'Le projet incroyable',
+            pageTitle: ''
+        };
+    },
+    created: function () {
+        this.pageTitle = this.$route.meta.title;
+        document.title = this.projectTitle;
+    },
+    watch: {
+        '$route' (to, from) {
+            this.pageTitle = to.meta.title;
+            document.title = this.projectTitle + ' | ' + this.pageTitle;
+        }
+    }
 });

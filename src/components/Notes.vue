@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h5 class="display-1">{{ title }}</h5>
-        <p class="subheading">{{ subheading }}</p>
     </div>
 </template>
 
@@ -9,8 +7,6 @@
 export default {
     data () {
         return {
-            title: 'Gestion des notes',
-            subheading: 'Semestre d\'automne 2017'
         };
     }
 };
