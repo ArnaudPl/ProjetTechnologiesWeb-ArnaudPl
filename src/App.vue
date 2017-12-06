@@ -1,7 +1,7 @@
 <template>
     <v-app dark>
 
-        <v-navigation-drawer fixed :mini-variant="miniVariant" app>
+        <v-navigation-drawer fixed :mini-variant="miniVariant" app style="display: flex; flex-direction: column; padding-bottom: 0;">
             <v-list>
                 <v-list-tile v-for="(menuItem, i) in menuItems" :key="i" :to="menuItem.to" ripple="true">
                     <v-list-tile-action>
@@ -13,15 +13,31 @@
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>
+
+            <v-spacer></v-spacer>
+
+            <!-- Collé en bas de page -->
+            <v-list>
+                <v-list-tile >
+                    <v-list-tile-action>
+                        <v-icon>settings</v-icon>
+                    </v-list-tile-action>
+
+                    <v-list-tile-content>
+                        <v-list-tile-title>Paramètres</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
         </v-navigation-drawer>
 
-        <v-toolbar app>
+        <v-toolbar app extended>
             <v-btn icon @click.stop="miniVariant = !miniVariant">
                 <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
             </v-btn>
 
             <v-toolbar-title v-text="title"></v-toolbar-title>
 
+            <v-toolbar-title class="pl-2 primary--text" slot="extension">{{ subtitle }}</v-toolbar-title>
         </v-toolbar>
 
         <v-content>
@@ -29,7 +45,7 @@
 
                 <v-slide-y-transition mode="out-in">
 
-                    <v-layout column align-center>
+                    <v-layout column>
 
                         <router-view></router-view>
 
@@ -70,7 +86,8 @@ export default {
                 }
             ],
             miniVariant: true,
-            title: 'Le projet incroyable'
+            title: 'Le projet incroyable',
+            subtitle: ''
         };
     }
 };
