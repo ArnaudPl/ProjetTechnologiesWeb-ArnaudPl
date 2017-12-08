@@ -24,8 +24,11 @@ export default {
     },
     beforeRouteUpdate (to, from, next) {
         // Force l'ajout de module lorsqu'il n'y en a pas encore
-        if (to.name !== 'Ajout de module' && this.modules === null) {
-            next({name: 'Ajout de module'});
+        if (to.name !== 'Ajout de module') {
+            this.modules = localStorage.getItem('modules');
+            if (this.modules === null) {
+                next({name: 'Ajout de module'});
+            }
         } else {
             next();
         }

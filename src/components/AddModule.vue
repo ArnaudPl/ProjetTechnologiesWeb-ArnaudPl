@@ -75,13 +75,27 @@
 import { validationMixin } from 'vuelidate';
 import { required, maxLength, requiredIf, between } from 'vuelidate/lib/validators';
 
+export const isNameUnique = value => {
+    let isUnique = true;
+    let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+
+    modules.forEach(module => {
+        if (module.name === value) {
+            isUnique = false;
+        }
+    });
+
+    return isUnique;
+};
+
 export default {
     mixins: [validationMixin],
     validations: {
         module: {
             name: {
                 required,
-                maxLength: maxLength(100)
+                maxLength: maxLength(100),
+                isNameUnique
             },
             description: {
                 maxLength: maxLength(255)
@@ -147,7 +161,7 @@ export default {
                 this.UE.push({
                     name: this.tmpUE.name,
                     description: this.tmpUE.description,
-                    coefficient: this.tmpUE.coefficient
+                    coefficient: this.tmpUE.coefficient.length ? this.tmpUE.coefficient : '1'
                 });
                 this.$v.tmpUE.$reset();
                 this.tmpUE.name = '';
@@ -156,7 +170,15 @@ export default {
             }
         },
         addModuleToLocalStorage () {
-            alert('AJOOOOOOOOOOOUT');
+            let newModule = {
+                name: this.module.name,
+                description: this.module.description,
+                UE: this.UE
+            };
+
+            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            modules.push(newModule);
+            localStorage.setItem('modules', JSON.stringify(modules));
         }
     },
     computed: {
@@ -166,6 +188,7 @@ export default {
 
             if (!this.$v.module.name.maxLength) errors.push('Le nom ne peut pas contenir plus de 100 caractères');
             if (!this.$v.module.name.required) errors.push('Le nom est obligatoire');
+            if (!this.$v.module.name.isNameUnique) errors.push('Le nom du module ne peut pas être déjà utilisé par un autre module');
             return errors;
         },
         tmpUEnameErrors () {
