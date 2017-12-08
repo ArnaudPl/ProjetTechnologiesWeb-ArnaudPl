@@ -9,10 +9,10 @@ import App from './App';
 import router from './router';
 
 Vue.use(Vuetify, { theme: {
-    primary: '#ee44aa',
+    primary: '#e5e5e5',
     secondary: '#424242',
-    accent: '#82B1FF',
-    error: '#FF5252',
+    accent: '#E53935',
+    error: '#D50000',
     info: '#2196F3',
     success: '#4CAF50',
     warning: '#FFC107'
@@ -25,5 +25,21 @@ new Vue({
     el: '#app',
     router,
     template: '<App/>',
-    components: { App }
+    components: { App },
+    data () {
+        return {
+            projectTitle: 'Le projet incroyable',
+            pageTitle: ''
+        };
+    },
+    created: function () {
+        this.pageTitle = this.$route.meta.title;
+        document.title = this.projectTitle;
+    },
+    watch: {
+        '$route' (to, from) {
+            this.pageTitle = to.meta.title;
+            document.title = this.projectTitle + ' | ' + this.pageTitle;
+        }
+    }
 });
