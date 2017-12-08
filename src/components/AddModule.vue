@@ -1,6 +1,9 @@
 <template>
     <div>
         <v-container grid-list-lg>
+            <v-flex v-if="alert.show" xs12 md8 offset-md2>
+                <v-alert dismissible :type="alert.type" v-model="alert.show" transition="scale-transition">{{ alert.text }}</v-alert>
+            </v-flex>
             <form>
                 <v-layout row wrap>
                     <v-flex xs12 md8 offset-md2>
@@ -72,76 +75,16 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate';
-import { required, maxLength, requiredIf, between } from 'vuelidate/lib/validators';
-
-export const isNameUnique = value => {
-    let isUnique = true;
-    let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
-
-    modules.forEach(module => {
-        if (module.name === value) {
-            isUnique = false;
-        }
-    });
-
-    return isUnique;
-};
+import moduleFormValidationMixin from '@/assets/js/mixins/moduleFormValidationMixin';
 
 export default {
-    mixins: [validationMixin],
-    validations: {
-        module: {
-            name: {
-                required,
-                maxLength: maxLength(100),
-                isNameUnique
-            },
-            description: {
-                maxLength: maxLength(255)
-            }
-        },
-        tmpUE: {
-            name: {
-                required: requiredIf(function () {
-                    return this.module.hasUE;
-                }),
-                maxLength: maxLength(100)
-            },
-            description: {
-                maxLength: maxLength(255)
-            },
-            coefficient: {
-                between: between(0.1, 10)
-            }
-        }
-    },
-    data () {
-        return {
-            module: {
-                name: '',
-                description: '',
-                hasUE: false
-            },
-            tmpUE: {
-                name: '',
-                description: '',
-                coefficient: 1
-            },
-            headers: [
-                { text: 'Nom de l\'unité', value: 'name', align: 'left' },
-                { text: 'Description', value: 'description', align: 'left', sortable: false },
-                { text: 'Coefficient', value: 'coefficient', align: 'right' }
-            ],
-            UE: [],
-            confirm: false
-        };
-    },
+    mixins: [moduleFormValidationMixin],
     methods: {
         submitModule () {
             if (this.$v.module.$invalid) {
                 // Que faire quand c'est invalide
                 this.$v.module.$touch();
+                this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
             } else {
                 // Et quand c'est valide
                 // On teste que l'utilisateur n'est pas en train de saisir une unité d'enseignement
@@ -156,6 +99,7 @@ export default {
             if (this.$v.tmpUE.$invalid) {
                 // Que faire quand c'est invalide
                 this.$v.tmpUE.$touch();
+                this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
             } else {
                 // Et quand c'est valide
                 this.UE.push({
@@ -167,6 +111,7 @@ export default {
                 this.tmpUE.name = '';
                 this.tmpUE.description = '';
                 this.tmpUE.coefficient = 1;
+                this.setAlert('success', 'Unité d\'enseignement ajoutée !');
             }
         },
         addModuleToLocalStorage () {
@@ -177,55 +122,27 @@ export default {
             };
 
             let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+
+            let lastId;
+            if (modules.length === 0) lastId = 0;
+            else lastId = modules[modules.length - 1].id ? parseInt(modules[modules.length - 1].id) : 0;
+            newModule.id = lastId + 1;
             modules.push(newModule);
             localStorage.setItem('modules', JSON.stringify(modules));
-        }
-    },
-    computed: {
-        nameErrors () {
-            const errors = [];
-            if (!this.$v.module.name.$dirty) return errors;
 
-            if (!this.$v.module.name.maxLength) errors.push('Le nom ne peut pas contenir plus de 100 caractères');
-            if (!this.$v.module.name.required) errors.push('Le nom est obligatoire');
-            if (!this.$v.module.name.isNameUnique) errors.push('Le nom du module ne peut pas être déjà utilisé par un autre module');
-            return errors;
-        },
-        tmpUEnameErrors () {
-            const errors = [];
-            if (!this.$v.tmpUE.name.$dirty) return errors;
+            this.$v.module.$reset();
+            this.$v.tmpUE.$reset();
+            this.module.name = '';
+            this.module.description = '';
+            this.tmpUE.name = '';
+            this.tmpUE.description = '';
+            this.tmpUE.coefficient = 1;
 
-            if (!this.$v.tmpUE.name.maxLength) errors.push('Le nom ne peut pas contenir plus de 100 caractères');
-            if (!this.$v.tmpUE.name.required) errors.push('Le nom est obligatoire');
-            return errors;
-        },
-        descriptionErrors () {
-            const errors = [];
-            if (!this.$v.module.description.$dirty) return errors;
-
-            if (!this.$v.module.description.maxLength) errors.push('La description ne peut pas contenir plus de 255 caractères');
-            return errors;
-        },
-        tmpUEdescriptionErrors () {
-            const errors = [];
-            if (!this.$v.tmpUE.description.$dirty) return errors;
-
-            if (!this.$v.tmpUE.description.maxLength) errors.push('La description ne peut pas contenir plus de 255 caractères');
-            return errors;
-        },
-        tmpUEcoefficientErrors () {
-            const errors = [];
-            if (!this.$v.tmpUE.coefficient.$dirty) return errors;
-
-            if (!this.$v.tmpUE.coefficient.between) errors.push('Le coefficient ne peut contenir qu\'une valeur numérique entre 0.1 et 10');
-            return errors;
+            this.setAlert('success', 'Module correctement ajouté ! Vous pouvez en ajouter un nouveau maintenant.');
         }
     }
 };
 </script>
 
 <style scoped>
-.display-1 {
-    text-align: center;
-}
 </style>

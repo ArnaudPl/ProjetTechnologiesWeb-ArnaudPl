@@ -6,6 +6,7 @@ import TableauBord from '@/components/TableauBord';
 import Notes from '@/components/Notes';
 import Modules from '@/components/Modules';
 import AddModule from '@/components/AddModule';
+import EditModule from '@/components/EditModule';
 
 Vue.use(Router);
 
@@ -47,6 +48,14 @@ export default new Router({
                     component: AddModule,
                     meta: {
                         title: 'Ajout d\'un module'
+                    }
+                },
+                {
+                    path: ':id/edit',
+                    name: 'Modification de module',
+                    component: EditModule,
+                    meta: {
+                        title: 'Modification d\'un module'
                     }
                 }
             ]
