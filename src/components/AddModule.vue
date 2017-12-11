@@ -63,11 +63,11 @@
         <v-dialog v-model="confirm" persistent max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
             <v-card>
                 <v-card-title class="headline">Annuler l'ajout de l'unité d'enseignement ?</v-card-title>
-                <v-card-text>Vous n'avez pas ajouté l'unité d'enseignement que vous êtiez en train de saisir.<br>Souhaitez-vous annuler ou continuer la saisie ?</v-card-text>
+                <v-card-text>Vous n'avez pas ajouté l'unité d'enseignement que vous êtiez en train de saisir.<br>Souhaitez-vous continuer la saisie ?</v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" flat @click.native="confirm = false; addModuleToLocalStorage()">Annuler</v-btn>
-                    <v-btn color="accent" flat @click.native="confirm = false">Continuer</v-btn>
+                    <v-btn color="primary" flat @click.native="confirm = false; addModuleToLocalStorage()">Quitter</v-btn>
+                    <v-btn color="accent" flat @click.native="confirm = false">Oui</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -139,6 +139,15 @@ export default {
             this.tmpUE.coefficient = 1;
 
             this.setAlert('success', 'Module correctement ajouté ! Vous pouvez en ajouter un nouveau maintenant.');
+        }
+    },
+    beforeRouteLeave (to, from, next) {
+        // On vérifie que l'utilisateur a sauvegardé avant de quitter la page
+        if (this.$v.module.name.$dirty || this.$v.module.description.$dirty) {
+            const leave = window.confirm('Voulez-vous vraiment quitter sans sauvegarder les changements ?');
+            leave ? next() : next(false);
+        } else {
+            next();
         }
     }
 };
