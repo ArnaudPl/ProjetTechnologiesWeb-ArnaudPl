@@ -1,7 +1,7 @@
 <template>
     <v-app dark>
 
-        <v-navigation-drawer fixed :mini-variant="miniVariant" app style="display: flex; flex-direction: column; padding-bottom: 0;">
+    <v-navigation-drawer :temporary="mobile" fixed :mini-variant="miniVariant" v-model="drawer" app style="display: flex; flex-direction: column; padding-bottom: 0;">
             <v-list>
                 <v-list-tile v-for="(menuItem, i) in menuItems" :key="i" :to="menuItem.to" ripple>
                     <v-list-tile-action>
@@ -31,8 +31,12 @@
         </v-navigation-drawer>
 
         <v-toolbar app extended>
-            <v-btn icon @click.stop="miniVariant = !miniVariant">
+            <v-btn icon @click.stop="miniVariant = !miniVariant" v-show="!this.mobile">
                 <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
+            </v-btn>
+            
+            <v-btn icon @click.stop="drawer = !drawer" v-show="this.mobile">
+                <v-icon v-html="menu"></v-icon>
             </v-btn>
 
             <v-toolbar-title v-text="this.$root.projectTitle"></v-toolbar-title>
@@ -70,9 +74,13 @@
 </template>
 
 <script>
+function isMobile () {
+    return window.innerWidth < 993;
+}
 export default {
     data () {
         return {
+            drawer: true,
             menuItems: [
                 {
                     icon: 'home',
@@ -90,8 +98,40 @@ export default {
                     to: '/modules'
                 }
             ],
-            miniVariant: true
+            miniVariant: true,
+            mobile: false
         };
+    },
+    created () {
+        this.mobile = isMobile();
+        this.onResize();
+        if (this.mobile) {
+            this.drawer = false;
+        }
+    },
+    mounted () {
+        window.addEventListener('resize', this.onResize);
+        this.mobile = isMobile();
+        this.onResize();
+        if (this.mobile) {
+            this.drawer = false;
+        }
+    },
+    destroyed () {
+        window.removeEventListener('resize', this.onResize);
+    },
+    methods: {
+        onResize () {
+            this.mobile = isMobile();
+
+            if (this.mobile) {
+                this.miniVariant = false;
+                this.drawer = false;
+            } else {
+                this.drawer = true;
+                this.miniVariant = true;
+            }
+        }
     }
 };
 </script>
