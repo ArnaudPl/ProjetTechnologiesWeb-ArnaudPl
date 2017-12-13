@@ -27,6 +27,7 @@ export default {
             },
             moduleValid: false,
             UEValid: true,
+            // Règles de validation des formulaires
             moduleNameRules: [
                 (v) => !!v || 'Le nom du module est obligatoire',
                 (v) => v && v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères'
