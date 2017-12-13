@@ -4,11 +4,13 @@ export default {
     data () {
         return {
             module: {
+                id: -1,
                 name: '',
                 description: '',
                 hasUE: false
             },
             tmpUE: {
+                id: -1,
                 name: '',
                 description: '',
                 coefficient: 1
@@ -30,14 +32,16 @@ export default {
             // Règles de validation des formulaires
             moduleNameRules: [
                 (v) => !!v || 'Le nom du module est obligatoire',
-                (v) => v && v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères'
+                (v) => v && v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères',
+                (v) => this.isModuleNameUnique(this.module.id, v) || 'Le nom ne peut pas avoir déjà été utilisé pour un autre module'
             ],
             moduleDescriptionRules: [
                 (v) => v.length <= 255 || 'La description ne peut pas contenir plus de 255 caractères'
             ],
             UENameRules: [
                 (v) => this.module.hasUE && !!v || 'Le nom de l\'unité est obligatoire',
-                (v) => this.module.hasUE && v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères'
+                (v) => this.module.hasUE && v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères',
+                (v) => this.module.hasUE && this.isUENameUnique(this.module.id, this.tmpUE.id, this.tmpUE.name) || 'Une seule unité d\'enseignement peut avoir ce nom dans ce module'
             ],
             UEDescriptionRules: [
                 (v) => v.length <= 255 || 'La description ne peut pas contenir plus de 255 caractères'
@@ -48,6 +52,38 @@ export default {
         };
     },
     methods: {
+        isModuleNameUnique (id, value) {
+            if (value === '') return true;
+            let isIt = true;
+
+            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+
+            modules.forEach(m => {
+                if (m.name === value && m.id !== id) isIt = false;
+            });
+            return isIt;
+        },
+        isUENameUnique (moduleId, UEId, UEName) {
+            if (UEName === '') return true;
+            let isIt = true;
+
+            if (moduleId !== -1) {
+                let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+
+                modules.forEach(m => {
+                    if (m.id === moduleId) {
+                        modules.UE.forEach(ue => {
+                            if (ue.name === UEName && ue.id !== UEId) isIt = false;
+                        });
+                    }
+                });
+            } else {
+                this.UE.forEach(ue => {
+                    if (ue.name === UEName &&  ue.id !== UEId) isIt = false;
+                });
+            }
+            return isIt;
+        },
         setAlert (type, text) {
             this.alert.type = type;
             this.alert.text = text;

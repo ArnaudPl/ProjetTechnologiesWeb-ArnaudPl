@@ -74,12 +74,13 @@ export default {
     },
     methods: {
         editModule () {
-            if (this.$refs.moduleForm.validate()) {
+            console.log(this.isModuleNameUnique(this.module.id, this.module.name));
+            /* if (this.$refs.moduleForm.validate()) {
                 // C'est valide
                 this.editModuleInLocalStorage();
             } else {
                 this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
-            }
+            } */
         },
         cancelEditModule () {
             this.getModuleInStorage();
