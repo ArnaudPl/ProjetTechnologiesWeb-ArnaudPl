@@ -4,44 +4,46 @@
             <v-flex v-if="alert.show" xs12 md8 offset-md2>
                 <v-alert dismissible :type="alert.type" v-model="alert.show" transition="scale-transition">{{ alert.text }}</v-alert>
             </v-flex>
-            <form>
-                <v-layout row wrap>
-                    <v-flex xs12 md8 offset-md2>
-                        <v-text-field box autofocus label="Nom du module" v-model.trim="module.name" :error-messages="nameErrors" :counter="100" @input="$v.module.name.$touch()" @blur="$v.module.name.$touch()" required></v-text-field>
-                    </v-flex>
-                    <v-flex xs12 md8 offset-md2>
-                        <v-text-field box textarea label="Description du module" v-model.trim="module.description" :error-messages="descriptionErrors" :counter="255" @input="$v.module.description.$touch()" @blur="$v.module.description.$touch()"></v-text-field>
-                    </v-flex>
-                    <v-flex xs12 text-xs-center>
-                        <v-btn @click="editModule" color="accent">Sauvegarder</v-btn>
-                        <v-btn flat @click="cancelEditModule" color="primary">Annuler</v-btn>
-                    </v-flex>
-                    <v-flex xs12 md8 offset-md2>
-                        <v-divider></v-divider>
-                    </v-flex>
-                    <v-flex xs12>
-                        <v-layout>
+            <v-layout row wrap>
+                <v-flex xs12>
+                    <v-form v-model="moduleValid" ref="moduleForm">
+                        <v-flex xs12 md8 offset-md2>
+                            <v-text-field box autofocus label="Nom du module" v-model.trim="module.name" :counter="100" required :rules="moduleNameRules"></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 md8 offset-md2>
+                            <v-text-field box textarea label="Description du module" v-model.trim="module.description":counter="255" :rules="moduleDescriptionRules"></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 text-xs-center>
+                            <v-btn @click="editModule" color="accent">Sauvegarder</v-btn>
+                            <v-btn flat @click="cancelEditModule" color="primary">Annuler</v-btn>
+                        </v-flex>
+                        <v-flex xs12 md8 offset-md2>
+                            <v-divider></v-divider>
+                        </v-flex>
+                    </v-form>
+                </v-flex>
+                <v-flex xs12>
+                    <v-layout>
+                        <v-flex xs12>
                             <v-flex xs12>
-                                <v-flex xs12>
-                                    <v-subheader>Liste des unités d'enseignement</v-subheader>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-data-table hide-actions :items="module.UE" item-key="name" class="elevation-1" :headers="headers">
-                                        <template slot="items" slot-scope="props">
-                                            <td>{{ props.item.name }}</td>
-                                            <td>{{ props.item.description }}</td>
-                                            <td class="text-xs-right">{{ props.item.coefficient }}</td>
-                                        </template>
-                                        <template slot="no-data">
-                                            Aucune unité d'enseignement pour ce module
-                                        </template>
-                                    </v-data-table>
-                                </v-flex>
+                                <v-subheader>Liste des unités d'enseignement</v-subheader>
                             </v-flex>
-                        </v-layout>
-                    </v-flex>
-                </v-layout>
-            </form>
+                            <v-flex xs12>
+                                <v-data-table hide-actions :items="module.UE" item-key="name" class="elevation-1" :headers="headers">
+                                    <template slot="items" slot-scope="props">
+                                        <td>{{ props.item.name }}</td>
+                                        <td>{{ props.item.description }}</td>
+                                        <td class="text-xs-right">{{ props.item.coefficient }}</td>
+                                    </template>
+                                    <template slot="no-data">
+                                        Aucune unité d'enseignement pour ce module
+                                    </template>
+                                </v-data-table>
+                            </v-flex>
+                        </v-flex>
+                    </v-layout>
+                </v-flex>
+            </v-layout>
         </v-container>
         <v-dialog v-model="noModule" persistent max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
             <v-card>
@@ -67,23 +69,16 @@ export default {
                 description: '',
                 UE: []
             },
-            noModule: false,
-            alert: {
-                type: '',
-                text: '',
-                show: false
-            }
+            noModule: false
         };
     },
     methods: {
         editModule () {
-            if (this.$v.module.$invalid) {
-                // Que faire quand c'est invalide
-                this.$v.module.$touch();
-                this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
-            } else {
-                // Et quand c'est valide
+            if (this.$refs.moduleForm.validate()) {
+                // C'est valide
                 this.editModuleInLocalStorage();
+            } else {
+                this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
             }
         },
         cancelEditModule () {
