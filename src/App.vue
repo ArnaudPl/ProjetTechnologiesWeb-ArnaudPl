@@ -36,7 +36,7 @@
             </v-btn>
             
             <v-btn icon @click.stop="drawer = !drawer" v-show="this.mobile">
-                <v-icon v-html="menu"></v-icon>
+                <v-icon>menu</v-icon>
             </v-btn>
 
             <v-toolbar-title v-text="this.$root.projectTitle"></v-toolbar-title>
