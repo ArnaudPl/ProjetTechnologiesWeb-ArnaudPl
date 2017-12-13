@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
-
-    <v-navigation-drawer fixed :mini-variant="miniVariant" app>
+    
+    <v-navigation-drawer clipped :temporary="mobile" fixed :mini-variant="miniVariant" v-model="drawer" app>
       <v-list>
         <v-list-tile v-for="(item, i) in items" :key="i" value="true">
 
@@ -18,8 +18,12 @@
     </v-navigation-drawer>
 
     <v-toolbar app>
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
+      <v-btn icon @click.native.stop="miniVariant = !miniVariant" v-show="!this.mobile">
         <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
+      </v-btn>
+
+      <v-btn icon @click.stop="drawer = !drawer" v-show="this.mobile">
+        <v-icon v-html="drawer ? 'menu': 'menu'"></v-icon>
       </v-btn>
       
       <v-toolbar-title v-text="title"></v-toolbar-title>
@@ -52,9 +56,13 @@
 </template>
 
 <script>
+function isMobile () {
+    return window.innerWidth < 993;
+}
 export default {
     data () {
         return {
+            drawer: true,
             items: [
                 {
                     icon: 'email',
@@ -62,8 +70,42 @@ export default {
                 }
             ],
             miniVariant: true,
-            title: 'Le projet incroyable'
+            title: 'Le projet incroyable',
+            mobile: false
         };
+    },
+    created () {
+        this.mobile = isMobile();
+        this.onResize();
+        if (this.mobile) {
+            this.drawer = false;
+        }
+    },
+// pas utilisé mounted pask il s'utilise qu'une fois
+    mounted () {
+        window.addEventListener('resize', this.onResize);
+        this.mobile = isMobile();
+        this.onResize();
+        if (this.mobile) {
+            this.drawer = false;
+        }
+    },
+    destroyed () {
+        window.removeEventListener('resize', this.onResize);
+    },
+
+    methods: {
+        onResize () {
+            this.mobile = isMobile();
+
+            if (this.mobile) {
+                this.miniVariant = false;
+                this.drawer = false;
+            } else {
+                this.drawer = true;
+                this.miniVariant = true;
+            }
+        }
     }
 };
 </script>
