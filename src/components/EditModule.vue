@@ -55,7 +55,6 @@
                 </v-flex>
             </v-layout>
         </v-container>
-        {{ selected }}
         <v-dialog v-model="noModule" persistent max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
             <v-card>
                 <v-card-title class="headline">Aucun module ne correspond à cette adresse.</v-card-title>
@@ -222,7 +221,28 @@ export default {
             this.selected = [];
         },
         deleteSelectedUE () {
-            alert('delete');
+            if (!confirm('Êtes-vous sûr(e) de vous vouloir supprimer l\'unité : ' + this.selected[0].name + ' ?')) {
+                this.setAlert('info', 'L\'unité n\'a pas été supprimée !');
+                return;
+            }
+            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+
+            modules.forEach((module, index) => {
+                if (module.id === this.module.id) {
+                    module.UE.forEach((ue, i, o) => {
+                        if (ue.id === this.selected[0].id) {
+                            module.UE.splice(i, 1);
+                        }
+                    });
+                }
+            });
+
+            localStorage.setItem('modules', JSON.stringify(modules));
+            this.setAlert('success', 'Unité d\'enseignement correctement supprimée !');
+            this.selected = [];
+
+            // Met à jour le module affiché
+            this.getModuleInStorage();
         },
         getModuleInStorage () {
             // Rechercher le module correspondant à la route dans le localStorage
