@@ -39,15 +39,15 @@ export default {
                 (v) => v.length <= 255 || 'La description ne peut pas contenir plus de 255 caractères'
             ],
             UENameRules: [
-                (v) => this.module.hasUE && !!v || 'Le nom de l\'unité est obligatoire',
-                (v) => this.module.hasUE && v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères',
-                (v) => this.module.hasUE && this.isUENameUnique(this.module.id, this.tmpUE.id, this.tmpUE.name) || 'Une seule unité d\'enseignement peut avoir ce nom dans ce module'
+                (v) => !!v || 'Le nom de l\'unité est obligatoire',
+                (v) => v.length <= 100 || 'Le nom doit être inférieur ou égal à 100 caractères',
+                (v) => this.isUENameUnique(this.module.id, this.tmpUE.id, v) || 'Une seule unité d\'enseignement peut avoir ce nom dans ce module'
             ],
             UEDescriptionRules: [
                 (v) => v.length <= 255 || 'La description ne peut pas contenir plus de 255 caractères'
             ],
             UECoefficientRules: [
-                (v) => this.module.hasUE && (parseFloat(v) >= 0.1 && parseFloat(v) <= 10.) || 'Le coefficient doit être entre 0.1 et 10'
+                (v) => (parseFloat(v) >= 0.1 && parseFloat(v) <= 10.) || 'Le coefficient doit être entre 0.1 et 10'
             ]
         };
     },
@@ -72,7 +72,7 @@ export default {
 
                 modules.forEach(m => {
                     if (m.id === moduleId) {
-                        modules.UE.forEach(ue => {
+                        m.UE.forEach(ue => {
                             if (ue.name === UEName && ue.id !== UEId) isIt = false;
                         });
                     }
