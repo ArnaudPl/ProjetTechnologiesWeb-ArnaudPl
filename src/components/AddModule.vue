@@ -19,7 +19,7 @@
                         </v-flex>
                     </v-form>
                 </v-flex>
-                    <v-flex xs12 v-if="module.hasUE">
+                    <v-flex xs12 v-show="module.hasUE">
                         <v-layout row wrap>
                             <v-flex xs12 md6>
                                 <v-form v-model="UEValid" ref="UEForm">
@@ -155,8 +155,19 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
+        let isDirty = false;
         // On vérifie que l'utilisateur a sauvegardé avant de quitter la page
-        if (this.$v.module.name.$dirty || this.$v.module.description.$dirty) {
+        this.$refs.moduleForm.inputs.forEach(input => {
+            isDirty = input.hasInput;
+        });
+
+        if (!isDirty) {
+            this.$refs.UEForm.inputs.forEach(input => {
+                isDirty = input.hasInput;
+            });
+        }
+
+        if (isDirty) {
             const leave = window.confirm('Voulez-vous vraiment quitter sans sauvegarder les changements ?');
             leave ? next() : next(false);
         } else {
