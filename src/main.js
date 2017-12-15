@@ -8,6 +8,10 @@ import 'vuetify/dist/vuetify.css';
 import App from './App';
 import router from './router';
 
+import VueScrollTo from 'vue-scrollto';
+
+Vue.use(VueScrollTo);
+
 Vue.use(Vuetify, { theme: {
     primary: '#e5e5e5',
     secondary: '#424242',

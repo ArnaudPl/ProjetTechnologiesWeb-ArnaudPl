@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-container grid-list-lg>
-            <v-flex v-if="alert.show" xs12 md8 offset-md2>
+            <v-flex id="alertBox" v-if="alert.show" xs12 md8 offset-md2>
                 <v-alert dismissible :type="alert.type" v-model="alert.show" transition="scale-transition">{{ alert.text }}</v-alert>
             </v-flex>
             <v-layout row wrap>
@@ -24,7 +24,7 @@
                             <v-flex xs12 md6>
                                 <v-form v-model="UEValid" ref="UEForm">
                                     <v-flex xs12>
-                                        <v-subheader>Ajouter une unité d'enseignement</v-subheader>
+                                        <v-subheader>{{ editMode ? 'Modifier l\'' : 'Ajouter une ' }}unité d'enseignement</v-subheader>
                                     </v-flex>
                                     <v-flex xs12>
                                         <v-text-field box label="Nom de l'unité d'enseignement" v-model.trim="tmpUE.name" :counter="100" :required="module.hasUE" :rules="UENameRules"></v-text-field>
@@ -36,7 +36,8 @@
                                         <v-text-field box label="Coefficient" hint="Valeur entre 0.1 et 10" persistent-hint v-model.trim="tmpUE.coefficient" :rules="UECoefficientRules"></v-text-field>
                                     </v-flex>
                                     <v-flex xs12 text-xs-center>
-                                        <v-btn @click="submitUE" color="accent">Ajouter</v-btn>
+                                        <v-btn @click="editMode ? editUE() : submitUE()" color="accent">{{ editMode ? 'Modifier' : 'Ajouter' }}</v-btn>
+                                        <v-btn flat v-show="editMode" @click="cancelEditUE" color="primary">Annuler</v-btn>
                                     </v-flex>
                                 </v-form>
                             </v-flex>
@@ -50,6 +51,20 @@
                                             <td>{{ props.item.name }}</td>
                                             <td>{{ props.item.description ? props.item.description : '-' }}</td>
                                             <td class="text-xs-right">{{ props.item.coefficient }}</td>
+                                            <td class="text-xs-right">
+                                                <v-tooltip v-show="tmpUE.id !== props.item.id" top>
+                                                    <v-btn flat icon slot="activator" @click.native="$emit('edit-UE', props.item)">
+                                                        <v-icon>edit</v-icon>
+                                                    </v-btn>
+                                                    <span>Modifier l'unité</span>
+                                                </v-tooltip>
+                                                <v-tooltip v-show="!editMode" top>
+                                                    <v-btn flat icon slot="activator" @click.native="$emit('delete-UE', props.item)">
+                                                        <v-icon>delete_forever</v-icon>
+                                                    </v-btn>
+                                                    <span>Supprimer l'unité</span>
+                                                </v-tooltip>
+                                            </td>
                                         </template>
                                         <template slot="no-data">
                                             Aucune unité d'enseignement pour l'instant
@@ -126,6 +141,38 @@ export default {
                 this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
             }
         },
+        editUE () {
+            if (this.$refs.UEForm.validate()) {
+                this.UE.forEach(ue => {
+                    if (ue.id === this.tmpUE.id) {
+                        ue.name = this.tmpUE.name;
+                        ue.description = this.tmpUE.description;
+                        ue.coefficient = this.tmpUE.coefficient;
+                    }
+                });
+                this.editMode = false;
+                this.tmpUE = {
+                    name: '',
+                    description: '',
+                    coefficient: 1,
+                    id: -1
+                };
+
+                this.setAlert('success', 'Unité correctement modifiée !');
+            } else {
+                this.setAlert('error', 'Veuillez corriger les erreurs du formulaire.');
+            }
+        },
+        cancelEditUE () {
+            this.editMode = false;
+            this.tmpUE = {
+                name: '',
+                description: '',
+                coefficient: 1,
+                id: -1
+            };
+            this.setAlert('info', 'L\'unité n\'a pas été modifiée');
+        },
         addModuleToLocalStorage () {
             let newModule = {
                 name: this.module.name,
@@ -153,6 +200,25 @@ export default {
 
             this.setAlert('success', 'Module correctement ajouté ! Vous pouvez en ajouter un nouveau maintenant.');
         }
+    },
+    mounted () {
+        // Gestion de la suppression des UE
+        this.$on('delete-UE', (ue) => {
+            this.UE.forEach((o, i) => {
+                if (o.id === ue.id) this.UE.splice(i, 1);
+                this.setAlert('info', 'Unité d\'enseignement supprimée');
+            });
+        });
+        // Gestion du clic sur le bouton de modification d'une UE
+        this.$on('edit-UE', (ue) => {
+            this.editMode = true;
+            this.tmpUE = {
+                name: ue.name,
+                description: ue.description,
+                coefficient: ue.coefficient,
+                id: ue.id
+            };
+        });
     },
     beforeRouteLeave (to, from, next) {
         let isDirty = false;

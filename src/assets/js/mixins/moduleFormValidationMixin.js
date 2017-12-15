@@ -18,9 +18,11 @@ export default {
             headers: [
                 { text: 'Nom de l\'unité', value: 'name', align: 'left' },
                 { text: 'Description', value: 'description', align: 'left', sortable: false },
-                { text: 'Coefficient', value: 'coefficient', align: 'right' }
+                { text: 'Coefficient', value: 'coefficient', align: 'right' },
+                { text: 'Actions', value: 'actions', align: 'center', sortable: false}
             ],
             UE: [],
+            editMode: false,
             confirm: false,
             alert: {
                 type: '',
@@ -71,7 +73,7 @@ export default {
                 let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
 
                 modules.forEach(m => {
-                    if (m.id === moduleId) {
+                    if (m.id === moduleId && m.UE) {
                         m.UE.forEach(ue => {
                             if (ue.name === UEName && ue.id !== UEId) isIt = false;
                         });
@@ -88,6 +90,9 @@ export default {
             this.alert.type = type;
             this.alert.text = text;
             this.alert.show = true;
+            setTimeout(() => {
+                this.$scrollTo('#alertBox');
+            }, 10); // 10ms pour laisser le temps au DOM d'afficher l'alert
         }
     }
 };

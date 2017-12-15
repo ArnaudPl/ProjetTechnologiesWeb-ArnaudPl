@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-container grid-list-lg>
-            <v-flex v-if="alert.show" xs12 md8 offset-md2>
+            <v-flex id="alertBox" v-if="alert.show" xs12 md8 offset-md2>
                 <v-alert dismissible :type="alert.type" v-model="alert.show" transition="scale-transition">{{ alert.text }}</v-alert>
             </v-flex>
             <v-layout row wrap>
@@ -29,16 +29,25 @@
                                 <v-subheader>Liste des unités d'enseignement</v-subheader>
                             </v-flex>
                             <v-flex xs12>
-                                <v-alert v-model="infoAlertSelectUE" v-show="selected.length === 0 && module.UE.length > 0" outline type="info" transition="scale-transition">Sélectionnez une unité pour la modifier ou la supprimer</v-alert>
-                                <v-alert v-show="selected.length >= 2" outline type="error" transition="scale-transition">Sélectionnez une seule unité pour la modifier ou la supprimer</v-alert>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-data-table hide-actions v-model="selected" :items="module.UE" item-key="name" class="elevation-1" :headers="headers">
+                                <v-data-table hide-actions :items="module.UE" item-key="name" class="elevation-1" :headers="headers">
                                     <template slot="items" slot-scope="props">
-                                        <td><v-checkbox primary hide-details v-model="props.selected"></v-checkbox></td>
                                         <td>{{ props.item.name }}</td>
                                         <td>{{ props.item.description.length ? props.item.description : '-' }}</td>
                                         <td class="text-xs-right">{{ props.item.coefficient }}</td>
+                                        <td class="text-xs-right">
+                                            <v-tooltip top>
+                                                <v-btn flat icon slot="activator" @click.native="$emit('edit-UE', props.item)">
+                                                    <v-icon>edit</v-icon>
+                                                </v-btn>
+                                                <span>Modifier l'unité</span>
+                                            </v-tooltip>
+                                            <v-tooltip top>
+                                                <v-btn flat icon slot="activator" @click.native="$emit('delete-UE', props.item)">
+                                                    <v-icon>delete_forever</v-icon>
+                                                </v-btn>
+                                                <span>Supprimer l'unité</span>
+                                            </v-tooltip>
+                                        </td>
                                     </template>
                                     <template slot="no-data">
                                         Aucune unité d'enseignement pour ce module
@@ -47,8 +56,6 @@
                             </v-flex>
                             <v-flex xs12 text-xs-center>
                                 <v-btn @click="openUEForm('add')" color="accent">Ajouter une unité</v-btn>
-                                <v-btn v-show="selected.length === 1" @click="openUEForm('edit')" color="accent">Modifier cette unité</v-btn>
-                                <v-btn v-show="selected.length === 1" @click="deleteSelectedUE" color="accent">Supprimer cette unité</v-btn>
                             </v-flex>
                         </v-flex>
                     </v-layout>
@@ -110,13 +117,6 @@ export default {
                 UE: []
             },
             noModule: false,
-            headers: [
-                { text: '', value: 'selected', sortable: false },
-                { text: 'Nom de l\'unité', value: 'name', align: 'left' },
-                { text: 'Description', value: 'description', align: 'left', sortable: false },
-                { text: 'Coefficient', value: 'coefficient', align: 'right' }
-            ],
-            selected: [],
             infoAlertSelectUE: true,
             editUE: false
         };
@@ -131,11 +131,12 @@ export default {
             }
         },
         cancelEditModule () {
+            this.editUE = false;
             this.getModuleInStorage();
             this.setAlert('info', 'Les valeurs de base ont été remises.');
         },
         editModuleInLocalStorage () {
-            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            let modules = this.returnModulesFromStorage();
 
             modules.forEach((module, index, obj) => {
                 if (module.id === this.module.id) {
@@ -148,15 +149,7 @@ export default {
             this.setAlert('success', 'Module correctement modifié !');
         },
         openUEForm (action) {
-            if (action === 'edit') {
-                // Découplage des variables
-                this.tmpUE = {
-                    name: this.selected[0].name,
-                    description: this.selected[0].description,
-                    coefficient: this.selected[0].coefficient,
-                    id: this.selected[0].id
-                };
-            } else {
+            if (action !== 'edit') {
                 this.tmpUE = {
                     name: '',
                     description: '',
@@ -179,7 +172,7 @@ export default {
             this.getModuleInStorage();
         },
         addUE () {
-            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            let modules = this.returnModulesFromStorage();
             let newUE = {
                 name: this.tmpUE.name,
                 description: this.tmpUE.description,
@@ -198,7 +191,7 @@ export default {
             this.setAlert('success', 'Unité d\'enseignement correctement ajoutée !');
         },
         editSelectedUE () {
-            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            let modules = this.returnModulesFromStorage();
             let editedUE = {
                 name: this.tmpUE.name,
                 description: this.tmpUE.description,
@@ -218,19 +211,18 @@ export default {
 
             localStorage.setItem('modules', JSON.stringify(modules));
             this.setAlert('success', 'Unité d\'enseignement correctement modifiée !');
-            this.selected = [];
         },
-        deleteSelectedUE () {
-            if (!confirm('Êtes-vous sûr(e) de vous vouloir supprimer l\'unité : ' + this.selected[0].name + ' ?')) {
+        deleteSelectedUE (selectedUE) {
+            if (!confirm('Êtes-vous sûr(e) de vous vouloir supprimer l\'unité : ' + selectedUE.name + ' ?')) {
                 this.setAlert('info', 'L\'unité n\'a pas été supprimée !');
                 return;
             }
-            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            let modules = this.returnModulesFromStorage();
 
             modules.forEach((module, index) => {
                 if (module.id === this.module.id) {
                     module.UE.forEach((ue, i, o) => {
-                        if (ue.id === this.selected[0].id) {
+                        if (ue.id === selectedUE.id) {
                             module.UE.splice(i, 1);
                         }
                     });
@@ -239,14 +231,13 @@ export default {
 
             localStorage.setItem('modules', JSON.stringify(modules));
             this.setAlert('success', 'Unité d\'enseignement correctement supprimée !');
-            this.selected = [];
 
             // Met à jour le module affiché
             this.getModuleInStorage();
         },
         getModuleInStorage () {
             // Rechercher le module correspondant à la route dans le localStorage
-            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            let modules = this.returnModulesFromStorage();
 
             modules.forEach(module => {
                 if (module.id === parseInt(this.$route.params.id)) {
@@ -259,10 +250,32 @@ export default {
                 // On déclenche la modal de redirection
                 this.noModule = true;
             }
+        },
+        returnModulesFromStorage () {
+            let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+            // S'il n'y a pas d'UE, on veut quand meme un tableau vide -> Sinon problème d'affichage
+            modules.forEach(m => {
+                if (!m.UE) m.UE = [];
+            });
+            return modules;
         }
     },
-    mounted: function () {
+    mounted () {
         this.getModuleInStorage();
+        // Gestion de la suppression des UE
+        this.$on('delete-UE', (ue) => {
+            this.deleteSelectedUE(ue);
+        });
+        // Gestion du clic sur le bouton de modification d'une UE
+        this.$on('edit-UE', (ue) => {
+            this.tmpUE = {
+                name: ue.name,
+                description: ue.description,
+                coefficient: ue.coefficient,
+                id: ue.id
+            };
+            this.openUEForm('edit');
+        });
     }
 };
 </script>
