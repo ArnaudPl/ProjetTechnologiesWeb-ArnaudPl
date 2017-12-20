@@ -1,6 +1,15 @@
 <template>
     <div>
-        <router-view></router-view>
+        <v-container grid-list-lg v-if="this.$route.name==='Modules'">
+            <v-layout row wrap>
+                <v-flex xs12>
+                    <v-flex xs-12 text-xs-left>
+                        <v-btn color="accent" @click="$router.push({ name: 'Ajout de module' })">Ajouter</v-btn>
+                    </v-flex>
+                </v-flex>
+            </v-layout>
+        </v-container>
+            <router-view></router-view>
     </div>
 </template>
 
