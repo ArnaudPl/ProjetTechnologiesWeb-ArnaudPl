@@ -4,6 +4,7 @@ import Router from 'vue-router';
 // Inclure les components vers lesquels rediriger
 import TableauBord from '@/components/TableauBord';
 import Notes from '@/components/Notes';
+import AddNote from '@/components/AddNote';
 import Modules from '@/components/Modules';
 import AddModule from '@/components/AddModule';
 import EditModule from '@/components/EditModule';
@@ -32,7 +33,17 @@ export default new Router({
             component: Notes,
             meta: {
                 title: 'Gestion des notes'
-            }
+            },
+            children: [
+                {
+                    path: 'add',
+                    name: 'Ajout de note',
+                    component: AddNote,
+                    meta: {
+                        title: 'Ajout d\'une note'
+                    }
+                }
+            ]
         },
         {
             path: '/modules',
