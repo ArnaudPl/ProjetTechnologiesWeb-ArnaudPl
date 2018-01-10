@@ -11,7 +11,7 @@
                             <v-text-field box autofocus label="Nom du module" v-model.trim="module.name" :counter="100" required :rules="moduleNameRules"></v-text-field>
                         </v-flex>
                         <v-flex xs12 md8 offset-md2>
-                            <v-text-field box textarea label="Description du module" v-model.trim="module.description":counter="255" :rules="moduleDescriptionRules"></v-text-field>
+                            <v-text-field box textarea label="Description du module" v-model.trim="module.description" :counter="255" :rules="moduleDescriptionRules"></v-text-field>
                         </v-flex>
                         <v-flex xs12 text-xs-center>
                             <v-btn @click="editModule" color="accent">Sauvegarder</v-btn>
