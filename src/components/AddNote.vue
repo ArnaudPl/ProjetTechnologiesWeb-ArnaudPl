@@ -115,7 +115,7 @@ export default {
         },
         addNote () {
             if (this.$refs.noteForm.validate()) {
-                let note = this.note;
+                let note = parseFloat(this.note);
                 let modules = this.returnModulesFromStorage();
 
                 modules.forEach(m => {
