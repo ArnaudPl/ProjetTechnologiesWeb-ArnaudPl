@@ -21,9 +21,12 @@
                             {{ props.item.date | toReadableDate }}
                         </td>
                         <td>
-                            <v-btn flat icon slot="activator" @click.native="$emit('delete-note', props.item)">
-                                <v-icon>delete_forever</v-icon>
-                            </v-btn>
+                            <v-tooltip top>
+                                <v-btn flat icon slot="activator" @click.native="$emit('delete-note', props.item)">
+                                    <v-icon>delete_forever</v-icon>
+                                </v-btn>
+                                <span>Supprimer la note</span>
+                            </v-tooltip>
                         </td>
                     </template>
                     <template slot="no-data">

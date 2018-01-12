@@ -203,6 +203,9 @@ export default {
                 if (module.id === this.module.id) {
                     module.UE.forEach((ue, i, o) => {
                         if (ue.id === this.tmpUE.id) {
+                            if (ue.notes) {
+                                editedUE.notes = ue.notes;
+                            }
                             o[i] = editedUE;
                         }
                     });

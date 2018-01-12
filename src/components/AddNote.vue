@@ -9,7 +9,7 @@
                 <v-flex xs12>
                     <v-form v-model="noteValid" ref="noteForm">
                         <v-flex xs12 md8 offset-md2>
-                            <v-select :items="selectData" v-model="selectedModule" label="Choix du module" :rules="selectModuleRules">
+                            <v-select :items="selectData" v-model="selectedModule" label="Choix du module" :rules="selectModuleRules" cache-items>
                                 <template slot="selection" slot-scope="selected">
                                     {{ selected.item.UEId ? selected.item.moduleName + ' | ' + selected.item.UEName : selected.item.moduleName }}
                                 </template>
@@ -25,9 +25,6 @@
                                     </template>
                                 </template>
                             </v-select>
-                        </v-flex>
-                        <v-flex xs12 v-if="selectedModule.UEId" class="text-xs-center">
-                            Coefficient de la note : {{ getSelectedUECoefficient }}
                         </v-flex>
                         <v-flex xs8 offset-xs2 md6 offset-md3 lg4 offset-lg4 xl2 offset-xl5>
                             <v-text-field box label="Note" hint="Valeur entre 1 et 6" persistent-hint v-model.trim="note" :rules="noteRules" required></v-text-field>

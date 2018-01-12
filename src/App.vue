@@ -1,5 +1,5 @@
 <template>
-    <v-app dark>
+    <v-app :dark="dark">
 
     <v-navigation-drawer :temporary="mobile" fixed :mini-variant="miniVariant" v-model="drawer" app style="display: flex; flex-direction: column; padding-bottom: 0;">
             <v-list>
@@ -18,7 +18,7 @@
 
             <!-- Collé en bas de page -->
             <v-list>
-                <v-list-tile>
+                <v-list-tile @click="settingsDialog = true">
                     <v-list-tile-action>
                         <v-icon>settings</v-icon>
                     </v-list-tile-action>
@@ -70,6 +70,18 @@
             <span>HE-Arc Gestion</span>
         </v-footer>
 
+        <v-dialog v-model="settingsDialog" max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
+            <v-card>
+                <v-card-title class="headline">Paramètres de l'application</v-card-title>
+                <v-card-text>
+                    <v-switch label="Utiliser le thème sombre ?" v-model="dark" @change="toggleTheme"></v-switch>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn color="error" block @click="settingsDialog = false;">Retourner à l'accueil</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </v-app>
 </template>
 
@@ -80,6 +92,8 @@ function isMobile () {
 export default {
     data () {
         return {
+            dark: true,
+            settingsDialog: false,
             drawer: true,
             menuItems: [
                 {
@@ -108,6 +122,16 @@ export default {
         if (this.mobile) {
             this.drawer = false;
         }
+
+        let useDarkTheme = localStorage.getItem('dark');
+
+        if (useDarkTheme === null) {
+            localStorage.setItem('dark', 'true');
+            this.dark = true;
+        } else {
+            if (useDarkTheme === 'true') this.dark = true;
+            else this.dark = false;
+        }
     },
     mounted () {
         window.addEventListener('resize', this.onResize);
@@ -131,6 +155,10 @@ export default {
                 this.drawer = true;
                 this.miniVariant = true;
             }
+        },
+        toggleTheme () {
+            let useDarkTheme = this.dark ? 'true' : 'false';
+            localStorage.setItem('dark', useDarkTheme);
         }
     }
 };
