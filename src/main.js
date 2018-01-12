@@ -13,8 +13,8 @@ import VueScrollTo from 'vue-scrollto';
 Vue.use(VueScrollTo);
 
 Vue.use(Vuetify, { theme: {
-    primary: '#e5e5e5',
-    secondary: '#424242',
+    primary: '#666',
+    secondary: '#9e9e9e',
     accent: '#E53935',
     error: '#D50000',
     info: '#2196F3',
