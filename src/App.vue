@@ -1,5 +1,5 @@
 <template>
-    <v-app :dark="dark">
+    <v-app :dark="dark" v-resize="onResize">
 
     <v-navigation-drawer :temporary="mobile" fixed :mini-variant="miniVariant" v-model="drawer" app style="display: flex; flex-direction: column; padding-bottom: 0;">
             <v-list>
@@ -86,9 +86,6 @@
 </template>
 
 <script>
-function isMobile () {
-    return window.innerWidth < 993;
-}
 export default {
     data () {
         return {
@@ -117,7 +114,6 @@ export default {
         };
     },
     created () {
-        this.mobile = isMobile();
         this.onResize();
         if (this.mobile) {
             this.drawer = false;
@@ -134,19 +130,13 @@ export default {
         }
     },
     mounted () {
-        window.addEventListener('resize', this.onResize);
-        this.mobile = isMobile();
-        this.onResize();
         if (this.mobile) {
             this.drawer = false;
         }
     },
-    destroyed () {
-        window.removeEventListener('resize', this.onResize);
-    },
     methods: {
         onResize () {
-            this.mobile = isMobile();
+            this.mobile = this.isMobile();
 
             if (this.mobile) {
                 this.miniVariant = false;
@@ -155,6 +145,9 @@ export default {
                 this.drawer = true;
                 this.miniVariant = true;
             }
+        },
+        isMobile () {
+            return this.$vuetify.breakpoint.mdAndDown;
         },
         toggleTheme () {
             let useDarkTheme = this.dark ? 'true' : 'false';
