@@ -49,7 +49,7 @@ export default {
                 (v) => v.length <= 255 || 'La description ne peut pas contenir plus de 255 caractères'
             ],
             UECoefficientRules: [
-                (v) => (parseFloat(v) >= 0.1 && parseFloat(v) <= 10. && parseFloat(v) % 0.05 === 0) || 'Le coefficient doit être entre 0.1 et 10 et être un multiple de 0.05'
+                (v) => (parseFloat(v) >= 0.1 && parseFloat(v) <= 10. && ((parseFloat(v) * 100) % 5) / 100 === 0) || 'Le coefficient doit être entre 0.1 et 10 et être un multiple de 0.05'
             ]
         };
     },

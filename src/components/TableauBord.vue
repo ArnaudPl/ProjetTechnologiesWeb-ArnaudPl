@@ -9,7 +9,7 @@
                         </v-card-title>
                         <v-card-text>
                             <v-layout row wrap>
-                                <v-flex xs6>
+                                <v-flex xs12 lg6>
                                     <h4>
                                         Choisissez un module :
                                     </h4>
@@ -25,28 +25,28 @@
                                     <h4>
                                         Note à simuler :
                                     </h4>
-                                    <v-text-field @input="handleNewNote" v-model="noteSimulee"></v-text-field>
+                                    <v-text-field @input="handleNewNote" v-model="noteSimulee" :rules="noteSimuleeRules"></v-text-field>
                                 </v-flex>
-                                <v-flex xs6>
+                                <v-flex xs12 lg6>
                                     <div class="text-xs-center" v-show="selectedModule !== -1 && (ue.length === 0 || selectedUE !== -1)">
                                         <div class="titre-moyenne">Moyenne du module :</div>
-                                        <div class="moyenne">{{ moyenneModule === -1 ? 'Aucune note n\'a été ajoutée' : moyenneModule.toFixed(2) }}</div>
+                                        <div class="moyenne" :class="(moyenneModule < 4 ? 'red' : moyenneModule === 4 ? 'yellow' : 'green') + '--text'">{{ moyenneModule === -1 ? 'Aucune note n\'a été ajoutée' : moyenneModule.toFixed(2) }}</div>
                                     </div>
 
                                     <div class="text-xs-center mt-3" v-show="selectedUE !== -1">
                                         <div class="titre-moyenne">Moyenne de l'unité d'enseignement :</div>
-                                        <div class="moyenne">{{ moyenneUE === -1 ? 'Aucune note n\'a été ajoutée' : moyenneUE.toFixed(2) }}</div>
+                                        <div class="moyenne" :class="(moyenneUE < 4 ? 'red' : moyenneUE === 4 ? 'yellow' : 'green') + '--text'">{{ moyenneUE === -1 ? 'Aucune note n\'a été ajoutée' : moyenneUE.toFixed(2) }}</div>
                                     </div>
 
                                     <div class="text-xs-center mt-3" v-show="moyenneModuleSimulee > -1">
                                         <v-divider class="mb-3"></v-divider>
                                         <div class="titre-moyenne">Moyenne simulée du module :</div>
-                                        <div class="moyenne">{{ moyenneModuleSimulee.toFixed(2) }}</div>
+                                        <div class="moyenne" :class="(moyenneModuleSimulee < 4 ? 'red' : moyenneModuleSimulee === 4 ? 'yellow' : 'green') + '--text'">{{ moyenneModuleSimulee.toFixed(2) }}</div>
                                     </div>
 
                                     <div class="text-xs-center mt-3" v-show="moyenneUESimulee > -1">
                                         <div class="titre-moyenne">Moyenne simulée de l'unité d'enseignement :</div>
-                                        <div class="moyenne">{{ moyenneUESimulee.toFixed(2) }}</div>
+                                        <div class="moyenne" :class="(moyenneUESimulee < 4 ? 'red' : moyenneUESimulee === 4 ? 'yellow' : 'green') + '--text'">{{ moyenneUESimulee.toFixed(2) }}</div>
                                     </div>
                                 </v-flex>
                             </v-layout>
@@ -70,7 +70,11 @@ export default {
             moyenneUE: -1,
             noteSimulee: null,
             moyenneModuleSimulee: -1,
-            moyenneUESimulee: -1
+            moyenneUESimulee: -1,
+            noteSimuleeRules: [
+                // eslint-disable-next-line
+                (v) => (parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100) % 5) / 100 === 0) || 'La note doit être entre 1 et 6 et être un multiple de 0.05'
+            ]
         };
     },
     methods: {
@@ -141,7 +145,7 @@ export default {
             let moyenneSimModule = -1;
             let moyennesUE = [];
 
-            if (parseFloat(this.noteSimulee) >= 1 && this.selectedModule > -1) {
+            if (parseFloat(this.noteSimulee) >= 1 && this.selectedModule > -1 && this.noteSimuleeRules[0](this.noteSimulee) === true) {
                 let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
 
                 modules.forEach(mod => {
