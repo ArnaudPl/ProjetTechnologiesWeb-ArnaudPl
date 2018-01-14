@@ -86,9 +86,6 @@
 </template>
 
 <script>
-function isMobile () {
-    return window.innerWidth <= 1263;
-}
 export default {
     data () {
         return {
@@ -139,7 +136,7 @@ export default {
     },
     methods: {
         onResize () {
-            this.mobile = isMobile();
+            this.mobile = this.isMobile();
 
             if (this.mobile) {
                 this.miniVariant = false;
@@ -148,6 +145,9 @@ export default {
                 this.drawer = true;
                 this.miniVariant = true;
             }
+        },
+        isMobile () {
+            return this.$vuetify.breakpoint.mdAndDown;
         },
         toggleTheme () {
             let useDarkTheme = this.dark ? 'true' : 'false';
