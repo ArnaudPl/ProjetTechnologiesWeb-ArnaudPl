@@ -1,5 +1,5 @@
 <template>
-    <v-app :dark="dark">
+    <v-app :dark="dark" v-resize="onResize">
 
     <v-navigation-drawer :temporary="mobile" fixed :mini-variant="miniVariant" v-model="drawer" app style="display: flex; flex-direction: column; padding-bottom: 0;">
             <v-list>
@@ -87,7 +87,7 @@
 
 <script>
 function isMobile () {
-    return window.innerWidth < 993;
+    return window.innerWidth <= 1263;
 }
 export default {
     data () {
@@ -117,7 +117,6 @@ export default {
         };
     },
     created () {
-        this.mobile = isMobile();
         this.onResize();
         if (this.mobile) {
             this.drawer = false;
@@ -134,15 +133,9 @@ export default {
         }
     },
     mounted () {
-        window.addEventListener('resize', this.onResize);
-        this.mobile = isMobile();
-        this.onResize();
         if (this.mobile) {
             this.drawer = false;
         }
-    },
-    destroyed () {
-        window.removeEventListener('resize', this.onResize);
     },
     methods: {
         onResize () {
