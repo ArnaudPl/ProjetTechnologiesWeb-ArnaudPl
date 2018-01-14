@@ -32,7 +32,7 @@ new Vue({
     components: { App },
     data () {
         return {
-            projectTitle: 'Le projet incroyable',
+            projectTitle: 'Gestion de Haute École',
             pageTitle: ''
         };
     },
