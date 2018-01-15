@@ -31,28 +31,48 @@
                                 <v-flex xs12 lg6>
                                     <div class="text-xs-center" v-if="selectedModule !== -1">
                                         <div class="titre-moyenne">Moyenne du module :</div>
-                                        <div class="moyenne" :class="(organizedModules.find(el => el.id === selectedModule).moyenne < 4 ? 'red' : organizedModules.find(el => el.id === selectedModule).moyenne === 4 ? 'yellow' : 'green') + '--text'">{{ isNaN(organizedModules.find(el => el.id === selectedModule).moyenne) ? 'Aucune note n\'a été ajoutée' : organizedModules.find(el => el.id === selectedModule).moyenne }}</div>
+                                        <div class="moyenne" :class="(parseFloat(organizedModules.find(el => el.id === selectedModule).moyenne) < 4 ? 'red' : parseFloat(organizedModules.find(el => el.id === selectedModule).moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ isNaN(organizedModules.find(el => el.id === selectedModule).moyenne) ? 'Aucune note n\'a été ajoutée' : organizedModules.find(el => el.id === selectedModule).moyenne }}</div>
                                     </div>
 
                                     <div class="text-xs-center mt-3" v-if="selectedModule !== -1 && selectedUE !== -1">
                                         <div class="titre-moyenne">Moyenne de l'unité d'enseignement :</div>
-                                        <div class="moyenne" :class="(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne < 4 ? 'red' : organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne === 4 ? 'yellow' : 'green') + '--text'">{{ isNaN(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) ? 'Aucune note n\'a été ajoutée' : organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne }}</div>
+                                        <div class="moyenne" :class="(parseFloat(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) < 4 ? 'red' : parseFloat(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ isNaN(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) ? 'Aucune note n\'a été ajoutée' : organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne }}</div>
                                     </div>
 
                                     <div class="text-xs-center mt-3" v-if="moduleWithNewNote.length > 0">
                                         <v-divider class="mb-3"></v-divider>
                                         <div class="titre-moyenne">Moyenne simulée du module :</div>
-                                        <div class="moyenne">{{ moduleWithNewNote[0].moyenne }}</div>
+                                        <div class="moyenne" :class="(parseFloat(moduleWithNewNote[0].moyenne) < 4 ? 'red' : parseFloat(moduleWithNewNote[0].moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ moduleWithNewNote[0].moyenne }}</div>
                                     </div>
 
                                     <div class="text-xs-center mt-3" v-if="moduleWithNewNote.length > 0 && selectedUE !== -1">
                                         <div class="titre-moyenne">Moyenne simulée de l'unité d'enseignement :</div>
-                                        <div class="moyenne">{{ moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne }}</div>
+                                        <div class="moyenne" :class="(parseFloat(moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne) < 4 ? 'red' : parseFloat(moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne }}</div>
                                     </div>
                                 </v-flex>
                             </v-layout>
                         </v-card-text>
                     </v-card>
+                </v-flex>
+                <v-flex xs12>
+                    <v-layout row wrap>
+                        <v-flex xs12 lg6 xl4 v-for="mod in organizedModules" :key="mod.id">
+                            <v-card :class="isNaN(mod.moyenne) ? '' : parseFloat(mod.moyenne) < 4 ? 'red black--text' : parseFloat(mod.moyenne) === 4 ? 'yellow black--text' : 'green'">
+                                <v-card-title>
+                                    <span class="nom-module">{{ mod.name }}</span><v-spacer></v-spacer><span class="moyenne-module">{{ isNaN(mod.moyenne) ? 'Pas encore de notes' : 'Moyenne : ' + mod.moyenne }}</span>
+                                </v-card-title>
+                                <v-divider v-if="mod.UE" :class="parseFloat(mod.moyenne) <= 4 ? 'grey darken-3' : ''"></v-divider>
+                                <v-card-text v-if="mod.UE">
+                                    <div v-for="(ue, i) in mod.UE" :key="ue.id">
+                                        <div class="ml-2 nom-ue">{{ ue.name }}</div>
+                                        <div class="ml-4 coefficient-ue">Coefficient : {{ ue.coefficient }}</div>
+                                        <div class="ml-4 moyenne-ue">{{ isNaN(ue.moyenne) ? 'Pas encore de notes' : 'Moyenne : ' + ue.moyenne }}</div>
+                                        <v-divider v-if="i !== mod.UE.length - 1" class="mb-2 mt-2" :class="parseFloat(mod.moyenne) <= 4 ? 'grey darken-3' : ''"></v-divider> <!-- Ne s'affiche pas si c'est la dernière UE -->
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -129,6 +149,16 @@ export default {
                     organizedModules.push(tmpModule);
                 }
             });
+
+            let sortASCMoyennes = (a, b) => {
+                if (isNaN(a.moyenne)) return 1;
+                if (isNaN(b.moyenne)) return -1;
+                if (parseFloat(a.moyenne) > parseFloat(b.moyenne)) return 1;
+                else if (parseFloat(a.moyenne) < parseFloat(b.moyenne)) return -1;
+                else return 0;
+            };
+            organizedModules.sort(sortASCMoyennes);
+
             return organizedModules;
         },
         handleNewNote () {
@@ -179,5 +209,32 @@ export default {
     font-size: 2em;
     font-weight: bolder;
     color: red;
+}
+
+.nom-module {
+    font-size: 1.5em;
+    max-width: 70%;
+}
+
+.moyenne-module {
+    font-size: 1.3em;
+    font-weight: bolder;
+}
+
+.nom-ue {
+    font-size: 1.2em;
+}
+
+.coefficient-ue {
+
+}
+
+.moyenne-ue {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.note-ue {
+    font-size: 2em;
 }
 </style>
