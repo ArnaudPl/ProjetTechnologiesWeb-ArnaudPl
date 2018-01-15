@@ -209,7 +209,9 @@ export default {
         this.getModulesList();
     },
     beforeRouteUpdate (to, from, next) {
-        this.getModulesList();
+        if (to.name === 'Tableau de bord') {
+            this.getModulesList();
+        }
         next();
     }
 };

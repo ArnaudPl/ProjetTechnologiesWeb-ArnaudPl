@@ -82,6 +82,18 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog persistent v-model="noModule" max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
+            <v-card>
+                <v-card-title class="headline">Aucun module n'a été trouvé</v-card-title>
+                <v-card-text>
+                    <p>Il semblerait que ça soit la première fois que vous soyez sur l'application.<br>Commencez tout d'abord par ajouter un module.</p>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn color="error" block @click="$route.name === 'Ajout de module' ? noModule = false : $router.push({ name: 'Ajout de module' })">Ajouter un module</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </v-app>
 </template>
 
@@ -110,10 +122,27 @@ export default {
                 }
             ],
             miniVariant: true,
-            mobile: false
+            mobile: false,
+            noModule: false
         };
     },
     created () {
+        this.noModule = localStorage.getItem('modules') === null;
+
+        this.$router.beforeEach((to, from, next) => {
+            if (this.noModule || from.name === 'Ajout de module') this.noModule = localStorage.getItem('modules') === null;
+            if (to.name === 'Ajout de module') {
+                this.noModule = false;
+                next();
+            } else {
+                if (this.noModule) {
+                    next({ name: 'Ajout de module' });
+                } else {
+                    next();
+                }
+            }
+        });
+
         this.onResize();
         if (this.mobile) {
             this.drawer = false;
