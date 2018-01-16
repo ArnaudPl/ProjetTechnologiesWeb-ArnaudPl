@@ -75,9 +75,10 @@
                 <v-card-title class="headline">Paramètres de l'application</v-card-title>
                 <v-card-text>
                     <v-switch label="Utiliser le thème sombre ?" v-model="dark" @change="toggleTheme"></v-switch>
+                    <v-btn block error @click="setBasicsData">Ajouter les données de base</v-btn>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn color="error" block @click="settingsDialog = false;">Retourner à l'accueil</v-btn>
+                    <v-btn color="error" block @click="settingsDialog = false;">Fermer cette fenêtre</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -164,6 +165,12 @@ export default {
         }
     },
     methods: {
+        setBasicsData () {
+            // eslint-disable-next-line
+            let data = [{'name':'613-1 Analyse des organisations','description':'','UE':[{'name':'613-1.1 Progiciels de gestion intégrés','description':'','coefficient':'2','id':1,'notes':[{'value':4,'date':1515939904971}]},{'name':'613-1.3 Gestion des processus métier (BPM)','description':'','coefficient':'1','id':2,'notes':[]}],'id':1},{'name':'613-2 Indicateurs de performance','description':'','UE':[{'name':'613-2.1 Comptabilité analytique','description':'','coefficient':'1','id':1,'notes':[{'value':6,'date':1516023728398}]},{'name':'613-2.2 Statistiques','description':'','coefficient':'1','id':2,'notes':[]},{'name':'613-2.3 Cockpit d\'entreprise','description':'','coefficient':'1','id':3,'notes':[]}],'id':2},{'name':'623-1 Implémentation du SI','description':'','UE':[{'name':'623-1.1 Méthodologie','description':'','coefficient':'1','id':1,'notes':[{'value':2,'date':1516023734352}]},{'name':'623-1.2 Modélisation avancée des données','description':'','coefficient':'1','id':2}],'id':3},{'name':'633-1 Algorithmes et structures de données','description':'','UE':[{'name':'633-1.1 Structures de données avancées','description':'','coefficient':'1','id':1,'notes':[{'value':3.95,'date':1516023743218}]},{'name':'633-1.2 Programmation de bases de données','description':'','coefficient':'1','id':2}],'id':4},{'name':'633-2 Architectures distribuées','description':'','UE':[{'name':'633-2.1 Applications et services réseaux','description':'','coefficient':'2','id':1},{'name':'633-2.2 Dialogue avec la base de données','description':'','coefficient':'1','id':2}],'id':5},{'name':'643-1 Choix d\'école 1','description':'','UE':[{'name':'643-1.1 Projet de technologies web de présentation','description':'','coefficient':'1','id':1}],'id':6},{'name':'Module sans UE','description':'','id':7,'UE':[],'notes':[]}];
+            localStorage.setItem('modules', JSON.stringify(data));
+            alert('Données pour la présentation correctement chargées');
+        },
         onResize () {
             this.mobile = this.isMobile();
 
