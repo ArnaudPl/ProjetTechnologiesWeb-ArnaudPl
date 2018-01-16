@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-container grid-list-lg>
+        <v-container grid-list-md fluid>
             <v-layout row wrap>
-                <v-flex xs12 lg10 offset-lg1>
+                <v-flex xs12 lg10 offset-lg1 mb-5>
                     <v-card>
                         <v-card-title primary-title>
                             <h2>Simulateur de notes</h2>
@@ -55,8 +55,9 @@
                     </v-card>
                 </v-flex>
                 <v-flex xs12>
-                    <v-layout row wrap>
-                        <v-flex xs12 lg6 xl4 v-for="mod in organizedModules" :key="mod.id">
+                    <v-layout row wrap v-masonry transition-duration="0.3s" item-selector=".item" column-width=".grid-sizer">
+                        <v-flex xs12 md6 lg4 xl3 class="grid-sizer" style="width: 100%; margin-bottom: -8px;"></v-flex>
+                        <v-flex xs12 md6 lg4 xl3 v-masonry-tile class="item" v-for="mod in organizedModules" :key="mod.id" style="width: 100%;">
                             <v-card :class="isNaN(mod.moyenne) ? '' : parseFloat(mod.moyenne) < 4 ? 'red black--text' : parseFloat(mod.moyenne) === 4 ? 'yellow black--text' : 'green'">
                                 <v-card-title>
                                     <span class="nom-module">{{ mod.name }}</span><v-spacer></v-spacer><span class="moyenne-module">{{ isNaN(mod.moyenne) ? 'Pas encore de notes' : 'Moyenne : ' + mod.moyenne }}</span>
@@ -74,7 +75,7 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
-            </v-layout>
+              </v-layout>
         </v-container>
     </div>
 </template>
