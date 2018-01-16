@@ -10,6 +10,7 @@ import router from './router';
 
 import VueScrollTo from 'vue-scrollto';
 import {VueMasonryPlugin} from 'vue-masonry';
+import { setTimeout } from 'timers';
 
 Vue.use(VueScrollTo);
 Vue.use(VueMasonryPlugin);
@@ -30,17 +31,27 @@ Vue.config.productionTip = false;
 new Vue({
     el: '#app',
     router,
-    template: '<App/>',
+    template: '<div><div :style="loading ? \'max-height: 100vh; max-width: 100vw; overflow: hidden;\' : \'\'"><div :style="loading ? \'display: flex;\' : \'display: none;\'" style="width: 100vw; height: 100vh; z-index: 101; background: rgba(0, 0, 0, .5); position: absolute; justify-content: center; align-items: center;"><v-progress-circular indeterminate :size="100" color="accent" style="z-index: 102;"></v-progress-circular></div><App/></div>',
     components: { App },
     data () {
         return {
             projectTitle: 'Gestion de Haute École',
-            pageTitle: ''
+            pageTitle: '',
+            loading: false
         };
     },
     created: function () {
         this.pageTitle = this.$route.meta.title;
         document.title = this.projectTitle;
+
+        this.$router.beforeEach((to, from, next) => {
+            this.loading = true;
+            setTimeout(() => { next(); }, 10);
+        });
+
+        this.$router.afterEach((to, from) => {
+            this.loading = false;
+        });
     },
     watch: {
         '$route' (to, from) {
