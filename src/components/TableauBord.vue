@@ -2,7 +2,7 @@
     <div>
         <v-container grid-list-md fluid>
             <v-layout row wrap>
-                <v-flex xs12 lg10 offset-lg1 mb-5>
+                <v-flex xs12 lg10 offset-lg1 mb-3>
                     <v-card>
                         <v-card-title primary-title>
                             <h2>Simulateur de notes</h2>
@@ -15,7 +15,7 @@
                                     </h4>
                                     <v-select @input="handleNewNote" :items="organizedModules" item-text="name" item-value="id" v-model="selectedModule"></v-select>
                                     
-                                    <div v-if="selectedModule !== -1 && organizedModules.find(el => el.id === selectedModule).UE">
+                                    <div v-if="selectedModule !== -1 && nbOfUEInSelectedModule > 0">
                                         <h4>
                                             Choisissez une unité d'enseignement :
                                         </h4>
@@ -34,7 +34,7 @@
                                         <div class="moyenne" :class="(parseFloat(organizedModules.find(el => el.id === selectedModule).moyenne) < 4 ? 'red' : parseFloat(organizedModules.find(el => el.id === selectedModule).moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ isNaN(organizedModules.find(el => el.id === selectedModule).moyenne) ? 'Aucune note n\'a été ajoutée' : organizedModules.find(el => el.id === selectedModule).moyenne }}</div>
                                     </div>
 
-                                    <div class="text-xs-center mt-3" v-if="selectedModule !== -1 && selectedUE !== -1">
+                                    <div class="text-xs-center mt-3" v-if="selectedModule !== -1 && nbOfUEInSelectedModule > 0 && selectedUE !== -1">
                                         <div class="titre-moyenne">Moyenne de l'unité d'enseignement :</div>
                                         <div class="moyenne" :class="(parseFloat(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) < 4 ? 'red' : parseFloat(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ isNaN(organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne) ? 'Aucune note n\'a été ajoutée' : organizedModules.find(el => el.id === selectedModule).UE.find(el => el.id === selectedUE).moyenne }}</div>
                                     </div>
@@ -45,7 +45,7 @@
                                         <div class="moyenne" :class="(parseFloat(moduleWithNewNote[0].moyenne) < 4 ? 'red' : parseFloat(moduleWithNewNote[0].moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ moduleWithNewNote[0].moyenne }}</div>
                                     </div>
 
-                                    <div class="text-xs-center mt-3" v-if="moduleWithNewNote.length > 0 && selectedUE !== -1">
+                                    <div class="text-xs-center mt-3" v-if="moduleWithNewNote.length > 0 && nbOfUEInSelectedModule > 0 && selectedUE !== -1">
                                         <div class="titre-moyenne">Moyenne simulée de l'unité d'enseignement :</div>
                                         <div class="moyenne" :class="(parseFloat(moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne) < 4 ? 'red' : parseFloat(moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne) === 4 ? 'yellow' : 'green') + '--text'">{{ moduleWithNewNote[0].UE.find(el => el.id === selectedUE).moyenne }}</div>
                                     </div>
@@ -54,10 +54,39 @@
                         </v-card-text>
                     </v-card>
                 </v-flex>
+                <v-flex xs12 class="text-xs-center mb-3">
+                    <h3 class="mb-2">Ordre de tri des modules</h3>
+                    <v-btn-toggle mandatory v-model="sortOrder">
+                        <v-btn flat value="date-asc">
+                            <span>Date d'ajout</span>
+                            <v-icon>keyboard_arrow_up</v-icon>
+                        </v-btn>
+                        <v-btn flat value="date-desc">
+                            <span>Date d'ajout</span>
+                            <v-icon>keyboard_arrow_down</v-icon>
+                        </v-btn>
+                        <v-btn flat value="moyenne-asc">
+                            <span>Moyenne</span>
+                            <v-icon>keyboard_arrow_up</v-icon>
+                        </v-btn>
+                        <v-btn flat value="moyenne-desc">
+                            <span>Moyenne</span>
+                            <v-icon>keyboard_arrow_down</v-icon>
+                        </v-btn>
+                        <v-btn flat value="nom-asc">
+                            <span>Nom</span>
+                            <v-icon>keyboard_arrow_down</v-icon>
+                        </v-btn>
+                        <v-btn flat value="nom-desc">
+                            <span>Nom</span>
+                            <v-icon>keyboard_arrow_up</v-icon>
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-flex>
                 <v-flex xs12>
                     <v-layout row wrap v-masonry transition-duration="0.3s" item-selector=".item" column-width=".grid-sizer">
                         <v-flex xs12 md6 lg4 xl3 class="grid-sizer" style="width: 100%; margin-bottom: -8px;"></v-flex>
-                        <v-flex xs12 md6 lg4 xl3 v-masonry-tile class="item" v-for="mod in organizedModules" :key="mod.id" style="width: 100%;">
+                        <v-flex xs12 md6 lg4 xl3 v-masonry-tile class="item" v-for="mod in sortedArray" :key="mod.id" style="width: 100%;">
                             <v-card :class="isNaN(mod.moyenne) ? '' : parseFloat(mod.moyenne) < 4 ? 'red black--text' : parseFloat(mod.moyenne) === 4 ? 'yellow black--text' : 'green'">
                                 <v-card-title>
                                     <span class="nom-module">{{ mod.name }}</span><v-spacer></v-spacer><span class="moyenne-module">{{ isNaN(mod.moyenne) ? 'Pas encore de notes' : 'Moyenne : ' + mod.moyenne }}</span>
@@ -92,7 +121,8 @@ export default {
                 // eslint-disable-next-line
                 (v) => (parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100) % 5) / 100 === 0) || 'La note doit être entre 1 et 6 et être un multiple de 0.05'
             ],
-            moduleWithNewNote: []
+            moduleWithNewNote: [],
+            sortOrder: 'moyenne-asc'
         };
     },
     methods: {
@@ -151,15 +181,6 @@ export default {
                 }
             });
 
-            let sortASCMoyennes = (a, b) => {
-                if (isNaN(a.moyenne)) return 1;
-                if (isNaN(b.moyenne)) return -1;
-                if (parseFloat(a.moyenne) > parseFloat(b.moyenne)) return 1;
-                else if (parseFloat(a.moyenne) < parseFloat(b.moyenne)) return -1;
-                else return 0;
-            };
-            organizedModules.sort(sortASCMoyennes);
-
             return organizedModules;
         },
         handleNewNote () {
@@ -170,9 +191,10 @@ export default {
                 if (this.selectedModule !== -1) {
                     let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
                     // Vérifie que l'utilisateur ait sélectionné une UE si le module en possède
-                    if (this.organizedModules.find(el => el.id === this.selectedModule).UE.length > 0 && this.selectedUE !== -1) {
+                    if (this.nbOfUEInSelectedModule > 1 && this.selectedUE !== -1) {
+                        if (!modules.find(el => el.id === this.selectedModule).UE.find(el => el.id === this.selectedUE).notes) modules.find(el => el.id === this.selectedModule).UE.find(el => el.id === this.selectedUE).notes = [];
                         modules.find(el => el.id === this.selectedModule).UE.find(el => el.id === this.selectedUE).notes.push({ value: this.noteSimulee });
-                    } else if (!this.organizedModules.find(el => el.id === this.selectedModule).UE || this.organizedModules.find(el => el.id === this.selectedModule).UE.length === 0) {
+                    } else if (this.nbOfUEInSelectedModule === 0) {
                         modules.find(el => el.id === this.selectedModule).notes.push({ value: this.noteSimulee });
                     } else {
                         return;
@@ -180,6 +202,69 @@ export default {
                     modules = this.getFormattedModules([modules.find(el => el.id === this.selectedModule)]);
                     this.moduleWithNewNote = modules;
                 }
+            }
+        }
+    },
+    computed: {
+        nbOfUEInSelectedModule () {
+            if (this.organizedModules.length > 0 && this.organizedModules.find(el => el.id === this.selectedModule).UE !== undefined) return this.organizedModules.find(el => el.id === this.selectedModule).UE.length;
+            else return 0;
+        },
+        sortedArray: function () {
+            function sortMoyenneASC (a, b) {
+                if (isNaN(a.moyenne)) return 1;
+                if (isNaN(b.moyenne)) return -1;
+                if (parseFloat(a.moyenne) > parseFloat(b.moyenne)) return 1;
+                else if (parseFloat(a.moyenne) < parseFloat(b.moyenne)) return -1;
+                else return 0;
+            }
+
+            function sortMoyennesDESC (a, b) {
+                if (isNaN(a.moyenne)) return 1;
+                if (isNaN(b.moyenne)) return -1;
+                if (parseFloat(a.moyenne) > parseFloat(b.moyenne)) return -1;
+                else if (parseFloat(a.moyenne) < parseFloat(b.moyenne)) return 1;
+                else return 0;
+            }
+
+            function sortNomsASC (a, b) {
+                if (a.name > b.name) return 1;
+                else if (a.name < b.name) return -1;
+                else return 0;
+            }
+
+            function sortNomsDESC (a, b) {
+                if (a.name < b.name) return 1;
+                else if (a.name > b.name) return -1;
+                else return 0;
+            }
+
+            if (this.organizedModules.length > 0) {
+                let sortedArray = [];
+                switch (this.sortOrder) {
+                case 'date-asc':
+                    sortedArray = this.organizedModules.sort((a, b) => a.id - b.id);
+                    break;
+                case 'date-desc':
+                    sortedArray = this.organizedModules.sort((a, b) => b.id - a.id);
+                    break;
+                case 'moyenne-asc':
+                    sortedArray = this.organizedModules.sort(sortMoyenneASC);
+                    break;
+                case 'moyenne-desc':
+                    sortedArray = this.organizedModules.sort(sortMoyennesDESC);
+                    break;
+                case 'nom-asc':
+                    sortedArray = this.organizedModules.sort(sortNomsASC);
+                    break;
+                case 'nom-desc':
+                    sortedArray = this.organizedModules.sort(sortNomsDESC);
+                    break;
+                }
+                this.$nextTick(function () {
+                    this.$redrawVueMasonry();
+                });
+                return sortedArray;
             }
         }
     },
