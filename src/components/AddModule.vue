@@ -133,6 +133,7 @@ export default {
                     coefficient: this.tmpUE.coefficient.length ? this.tmpUE.coefficient : '1',
                     id: lastID
                 });
+                this.$refs.UEForm.reset();
                 this.tmpUE.name = '';
                 this.tmpUE.description = '';
                 this.tmpUE.coefficient = 1;
@@ -190,6 +191,9 @@ export default {
             newModule.id = lastId + 1;
             modules.push(newModule);
             localStorage.setItem('modules', JSON.stringify(modules));
+
+            this.$refs.moduleForm.reset();
+            this.$refs.UEForm.reset();
 
             this.module.name = '';
             this.module.description = '';

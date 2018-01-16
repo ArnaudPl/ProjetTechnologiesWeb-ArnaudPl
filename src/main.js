@@ -31,7 +31,7 @@ Vue.config.productionTip = false;
 new Vue({
     el: '#app',
     router,
-    template: '<div><div :style="loading ? \'max-height: 100vh; max-width: 100vw; overflow: hidden;\' : \'\'"><div :style="loading ? \'display: flex;\' : \'display: none;\'" style="width: 100vw; height: 100vh; z-index: 101; background: rgba(0, 0, 0, .5); position: absolute; justify-content: center; align-items: center;"><v-progress-circular indeterminate :size="100" color="accent" style="z-index: 102;"></v-progress-circular></div><App/></div>',
+    template: '<div><div :style="loading ? \'max-height: 100vh; max-width: 100vw; overflow: hidden;\' : \'\'"><div :style="loading ? \'display: flex;\' : \'display: none;\'" style="width: 100vw; height: 100vh; z-index: 101; background: rgba(0, 0, 0, .5); position: absolute; justify-content: center; align-items: center;"><v-progress-circular indeterminate :size="100" color="accent" style="z-index: 102;"></v-progress-circular></div></div><App/></div>',
     components: { App },
     data () {
         return {

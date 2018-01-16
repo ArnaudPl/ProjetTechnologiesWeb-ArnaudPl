@@ -133,6 +133,8 @@ export default {
 
                 localStorage.setItem('modules', JSON.stringify(modules));
 
+                this.$refs.noteForm.reset();
+
                 this.selectedModule = -1;
                 this.note = 1;
 

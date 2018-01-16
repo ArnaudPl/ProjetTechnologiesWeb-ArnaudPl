@@ -146,6 +146,7 @@ export default {
             });
 
             localStorage.setItem('modules', JSON.stringify(modules));
+            this.$refs.moduleForm.reset();
             this.setAlert('success', 'Module correctement modifié !');
         },
         openUEForm (action) {
