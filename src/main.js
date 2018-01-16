@@ -46,7 +46,7 @@ new Vue({
 
         this.$router.beforeEach((to, from, next) => {
             window.scrollTo(0, 0);
-            this.loading = true;
+            if (localStorage.getItem('modules') !== null) this.loading = true;
             setTimeout(() => { next(); }, 10);
         });
 
