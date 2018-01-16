@@ -137,7 +137,7 @@ export default {
             noteSimulee: null,
             noteSimuleeRules: [
                 // eslint-disable-next-line
-                (v) => (parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100) % 5) / 100 === 0) || 'La note doit être entre 1 et 6 et être un multiple de 0.05'
+                (v) => (parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100).toFixed(10) % 5) / 100 === 0) || 'La note doit être entre 1 et 6 et être un multiple de 0.05'
             ],
             moduleWithNewNote: [],
             sortOrder: 'moyenne-asc',
@@ -359,10 +359,6 @@ export default {
 
 .nom-ue {
     font-size: 1.2em;
-}
-
-.coefficient-ue {
-
 }
 
 .moyenne-ue {

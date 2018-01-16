@@ -62,7 +62,7 @@ export default {
                 // eslint-disable-next-line
                 (v) => !!v || 'Ce champ est obligatoire',
                 // eslint-disable-next-line
-                (v) => v && parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100) % 5) === 0 || 'La valeur doit être comprise entre 1 et 6 et être un multiple de 0.05'
+                (v) => v && parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100).toFixed(10) % 5) === 0 || 'La valeur doit être comprise entre 1 et 6 et être un multiple de 0.05'
             ]
         };
     },
