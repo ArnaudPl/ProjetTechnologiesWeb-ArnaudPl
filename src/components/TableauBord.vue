@@ -2,6 +2,9 @@
     <div>
         <v-container grid-list-md fluid>
             <v-layout row wrap>
+                <v-flex id="alertBox" v-if="alert.show" xs12 md8 offset-md2>
+                    <v-alert dismissible :type="alert.type" v-model="alert.show" transition="scale-transition">{{ alert.text }}</v-alert>
+                </v-flex>
                 <v-flex xs12 lg10 offset-lg1 mb-3>
                     <v-card>
                         <v-card-title primary-title>
@@ -56,28 +59,28 @@
                 </v-flex>
                 <v-flex xs12 class="text-xs-center mb-3">
                     <h3 class="mb-2">Ordre de tri des modules</h3>
-                    <v-btn-toggle mandatory v-model="sortOrder">
-                        <v-btn flat value="date-asc">
+                    <v-btn-toggle mandatory v-model="sortOrder" :style="$vuetify.breakpoint.smAndDown ? 'display: inline-block' : ''">
+                        <v-btn flat value="date-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Date d'ajout</span>
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
-                        <v-btn flat value="date-desc">
+                        <v-btn flat value="date-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Date d'ajout</span>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
-                        <v-btn flat value="moyenne-asc">
+                        <v-btn flat value="moyenne-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Moyenne</span>
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
-                        <v-btn flat value="moyenne-desc">
+                        <v-btn flat value="moyenne-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Moyenne</span>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
-                        <v-btn flat value="nom-asc">
+                        <v-btn flat value="nom-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Nom</span>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
-                        <v-btn flat value="nom-desc">
+                        <v-btn flat value="nom-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Nom</span>
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
@@ -100,6 +103,21 @@
                                         <v-divider v-if="i !== mod.UE.length - 1" class="mb-2 mt-2" :class="parseFloat(mod.moyenne) <= 4 ? 'grey darken-3' : ''"></v-divider> <!-- Ne s'affiche pas si c'est la dernière UE -->
                                     </div>
                                 </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-tooltip top>
+                                        <v-btn flat icon slot="activator" @click="$router.push({ path: `/modules/${parseInt(mod.id)}/edit` })">
+                                            <v-icon :class="isNaN(mod.moyenne) ? '' : parseFloat(mod.moyenne) <= 4 ? 'black--text' : ''">edit</v-icon>
+                                        </v-btn>
+                                        <span>Modifier le module</span>
+                                    </v-tooltip>
+                                    <v-tooltip top>
+                                        <v-btn flat icon slot="activator" @click.native="$emit('delete-module', mod.id)">
+                                            <v-icon :class="isNaN(mod.moyenne) ? '' : parseFloat(mod.moyenne) <= 4 ? 'black--text' : ''">delete_forever</v-icon>
+                                        </v-btn>
+                                        <span>Supprimer le module</span>
+                                    </v-tooltip>
+                                </v-card-actions>
                             </v-card>
                         </v-flex>
                     </v-layout>
@@ -122,7 +140,12 @@ export default {
                 (v) => (parseFloat(v) >= 1. && parseFloat(v) <= 6. && ((parseFloat(v) * 100) % 5) / 100 === 0) || 'La note doit être entre 1 et 6 et être un multiple de 0.05'
             ],
             moduleWithNewNote: [],
-            sortOrder: 'moyenne-asc'
+            sortOrder: 'moyenne-asc',
+            alert: {
+                type: '',
+                text: '',
+                show: false
+            }
         };
     },
     methods: {
@@ -203,6 +226,14 @@ export default {
                     this.moduleWithNewNote = modules;
                 }
             }
+        },
+        setAlert (type, text) {
+            this.alert.type = type;
+            this.alert.text = text;
+            this.alert.show = true;
+            setTimeout(() => {
+                this.$scrollTo('#alertBox');
+            }, 10); // 10ms pour laisser le temps au DOM d'afficher l'alert
         }
     },
     computed: {
@@ -269,6 +300,25 @@ export default {
         }
     },
     mounted: function () {
+        this.$on('delete-module', (modID) => {
+            let nomModule = this.organizedModules.find(el => el.id === modID).name;
+            if (confirm('Etes-vous certain de vouloir supprimer le module : ' + nomModule + ' ? \nCette action est irréversible.')) {
+                let modules = localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules'));
+
+                modules.forEach((mod, index) => {
+                    if (mod.id === modID) {
+                        modules.splice(index, 1);
+                        console.log(modules);
+                    }
+                });
+
+                localStorage.setItem('modules', JSON.stringify(modules));
+                this.setAlert('success', 'Module correctement supprimé !');
+                this.organizedModules = this.getFormattedModules(localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules')));
+            } else {
+                this.setAlert('info', 'Le module n\'a pas été supprimé.');
+            }
+        });
         this.organizedModules = this.getFormattedModules(localStorage.getItem('modules') === null ? [] : JSON.parse(localStorage.getItem('modules')));
     },
     beforeRouteUpdate (to, from, next) {

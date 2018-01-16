@@ -119,7 +119,7 @@ export default {
                 {
                     icon: 'event',
                     title: 'Gestion des modules',
-                    to: '/modules'
+                    to: '/modules/add'
                 }
             ],
             miniVariant: true,

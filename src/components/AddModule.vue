@@ -133,6 +133,7 @@ export default {
                     coefficient: this.tmpUE.coefficient.length ? this.tmpUE.coefficient : '1',
                     id: lastID
                 });
+                this.$refs.UEForm.reset();
                 this.tmpUE.name = '';
                 this.tmpUE.description = '';
                 this.tmpUE.coefficient = 1;
@@ -191,6 +192,9 @@ export default {
             modules.push(newModule);
             localStorage.setItem('modules', JSON.stringify(modules));
 
+            this.$refs.moduleForm.reset();
+            this.$refs.UEForm.reset();
+
             this.module.name = '';
             this.module.description = '';
             this.tmpUE.name = '';
@@ -224,12 +228,13 @@ export default {
         let isDirty = false;
         // On vérifie que l'utilisateur a sauvegardé avant de quitter la page
         this.$refs.moduleForm.inputs.forEach(input => {
-            isDirty = input.hasInput;
+            // Ne pas prendre en compte la chechbox
+            if (input.$el.className.search('checkbox') === -1 && !isDirty) isDirty = input.hasInput;
         });
 
         if (!isDirty) {
             this.$refs.UEForm.inputs.forEach(input => {
-                isDirty = input.hasInput;
+                if (!isDirty) isDirty = input.hasInput;
             });
         }
 
