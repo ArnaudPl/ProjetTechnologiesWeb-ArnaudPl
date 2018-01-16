@@ -56,28 +56,28 @@
                 </v-flex>
                 <v-flex xs12 class="text-xs-center mb-3">
                     <h3 class="mb-2">Ordre de tri des modules</h3>
-                    <v-btn-toggle mandatory v-model="sortOrder">
-                        <v-btn flat value="date-asc">
+                    <v-btn-toggle mandatory v-model="sortOrder" :style="$vuetify.breakpoint.smAndDown ? 'display: inline-block' : ''">
+                        <v-btn flat value="date-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Date d'ajout</span>
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
-                        <v-btn flat value="date-desc">
+                        <v-btn flat value="date-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Date d'ajout</span>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
-                        <v-btn flat value="moyenne-asc">
+                        <v-btn flat value="moyenne-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Moyenne</span>
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
-                        <v-btn flat value="moyenne-desc">
+                        <v-btn flat value="moyenne-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Moyenne</span>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
-                        <v-btn flat value="nom-asc">
+                        <v-btn flat value="nom-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Nom</span>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
-                        <v-btn flat value="nom-desc">
+                        <v-btn flat value="nom-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Nom</span>
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
