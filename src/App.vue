@@ -75,7 +75,7 @@
                 <v-card-title class="headline">Paramètres de l'application</v-card-title>
                 <v-card-text>
                     <v-switch label="Utiliser le thème sombre ?" v-model="dark" @change="toggleTheme"></v-switch>
-                    <v-btn block error @click="setBasicsData">Ajouter les données de base</v-btn>
+                    <v-btn block color="error" @click="setBasicsData">Ajouter les données de base</v-btn>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn color="error" block @click="settingsDialog = false;">Fermer cette fenêtre</v-btn>
@@ -196,6 +196,10 @@ export default {
 <style>
     .list__tile--active {
         background-color: #D50000;
+    }
+
+    .list__tile--active div {
+        color: white !important;
     }
 
     .list__tile--active:hover {

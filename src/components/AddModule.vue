@@ -227,15 +227,10 @@ export default {
     beforeRouteLeave (to, from, next) {
         let isDirty = false;
         // On vérifie que l'utilisateur a sauvegardé avant de quitter la page
-        this.$refs.moduleForm.inputs.forEach(input => {
-            // Ne pas prendre en compte la chechbox
-            if (input.$el.className.search('checkbox') === -1 && !isDirty) isDirty = input.hasInput;
-        });
+        if (this.module.name !== '' || this.module.description !== '' || this.UE.length > 0) isDirty = true;
 
-        if (!isDirty) {
-            this.$refs.UEForm.inputs.forEach(input => {
-                if (!isDirty) isDirty = input.hasInput;
-            });
+        if (!isDirty && this.module.hasUE) {
+            if (this.tmpUE.name !== '' || this.tmpUE.description !== '') isDirty = true;
         }
 
         if (isDirty) {

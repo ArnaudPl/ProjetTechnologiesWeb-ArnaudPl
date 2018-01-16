@@ -78,11 +78,11 @@
                         </v-btn>
                         <v-btn flat value="nom-asc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Nom</span>
-                            <v-icon>keyboard_arrow_down</v-icon>
+                            <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
                         <v-btn flat value="nom-desc" :style="$vuetify.breakpoint.smAndDown ? 'display: block; width: 100%;' : ''">
                             <span>Nom</span>
-                            <v-icon>keyboard_arrow_up</v-icon>
+                            <v-icon>keyboard_arrow_down</v-icon>
                         </v-btn>
                     </v-btn-toggle>
                 </v-flex>
