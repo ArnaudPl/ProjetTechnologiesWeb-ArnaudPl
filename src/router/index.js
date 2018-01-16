@@ -8,6 +8,7 @@ import AddNote from '@/components/AddNote';
 import Modules from '@/components/Modules';
 import AddModule from '@/components/AddModule';
 import EditModule from '@/components/EditModule';
+import Error404 from '@/components/404';
 
 Vue.use(Router);
 
@@ -70,6 +71,14 @@ export default new Router({
                     }
                 }
             ]
+        },
+        {
+            path: '*',
+            name: 'Erreur 404',
+            component: Error404,
+            meta: {
+                title: 'Erreur 404'
+            }
         }
     ]
 });
