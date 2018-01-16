@@ -228,12 +228,13 @@ export default {
         let isDirty = false;
         // On vérifie que l'utilisateur a sauvegardé avant de quitter la page
         this.$refs.moduleForm.inputs.forEach(input => {
-            isDirty = input.hasInput;
+            // Ne pas prendre en compte la chechbox
+            if (input.$el.className.search('checkbox') === -1 && !isDirty) isDirty = input.hasInput;
         });
 
         if (!isDirty) {
             this.$refs.UEForm.inputs.forEach(input => {
-                isDirty = input.hasInput;
+                if (!isDirty) isDirty = input.hasInput;
             });
         }
 

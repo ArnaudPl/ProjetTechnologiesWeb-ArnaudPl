@@ -45,6 +45,7 @@ new Vue({
         document.title = this.projectTitle;
 
         this.$router.beforeEach((to, from, next) => {
+            window.scrollTo(0, 0);
             this.loading = true;
             setTimeout(() => { next(); }, 10);
         });
