@@ -9,8 +9,10 @@ import App from './App';
 import router from './router';
 
 import VueScrollTo from 'vue-scrollto';
+import {VueMasonryPlugin} from 'vue-masonry';
 
 Vue.use(VueScrollTo);
+Vue.use(VueMasonryPlugin);
 
 Vue.use(Vuetify, { theme: {
     primary: '#666',
