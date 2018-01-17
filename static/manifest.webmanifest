@@ -1,0 +1,14 @@
+{
+  "name": "Gestion de Haute-Ecole",
+  "short_name": "Gestion HE",
+  "description": "L'application permet de gérer la vie étudiante dans une école possédant une gestion par modules.",
+  "start_url": "/projet-tiago_arnaud/",
+  "background-color": "red",
+  "display": "minimal-ui",
+  "icons": [{
+    "src": "icons/logo.png",
+    "sizes": "200x200",
+    "type": "image/png"
+  }],
+  "orientation": "portrait-primary"
+}
